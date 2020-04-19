@@ -40,3 +40,5 @@ class Deck():
 
     def draw(self):
         return self.full_deck[randint(0,52)]
+
+    

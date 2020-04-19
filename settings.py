@@ -2,6 +2,7 @@
 # Settings for Up and Down the River (a card game)
 #
 ###############################################################################
+import math
 
 class Settings() :
     """Class to store all the settings for Up and Down the River Game"""
@@ -23,3 +24,6 @@ class Settings() :
         #Basic Settings
         self.game = "Multiplayer"
         self.number_of_players = 3
+        self.round = 1
+        self.max_max_rounds_available = math.trunc(53 / self.number_of_players)
+        self.max_rounds = 7
