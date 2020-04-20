@@ -8,6 +8,7 @@ from pygame.sprite import Group
 from player import Player
 from deck import Deck
 from settings import Settings
+import game_functions as gf
 
 
 def run_game() :
@@ -21,6 +22,9 @@ def run_game() :
     # pygame.display.set_caption("Up and Down the River")
 
 
+    #TESTING#
+###################################
+
     #Add active players to array
     active_players = []
     i = 0
@@ -30,14 +34,14 @@ def run_game() :
         active_players.append(new_player.player)
         i = i + 1
 
-    #TESTING
     #setting up new
     deck = Deck()
 
-    #deal out hands - SET THIS UP IN GAME FUNCTIONS
-    for i in range(0, len(active_players)):
-        dealt_card = deck.draw()
-        active_players[i]['hand'].append(dealt_card)
+    #Current round - shuffle up a new deck
+    shuffled_deck = deck.shuffle()
+    curr_round = settings.round
+
+    gf.deal_round(shuffled_deck, curr_round, active_players)
 
     print(active_players)
 

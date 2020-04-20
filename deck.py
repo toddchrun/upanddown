@@ -3,7 +3,6 @@
 #   Used to build initial deck of 52 cards (plus insertion of Joker)
 #   Function to draw - returns random card while keeping track of its index
 ###############################################################################
-from random import randint
 
 class Deck():
     """
@@ -21,9 +20,6 @@ class Deck():
         #initialize a full deck array
         self.full_deck = []
 
-        #initialize empty array to keep track of cards already dealt
-        self.used_card_index = []
-
         #build full deck
         self.build_deck();
 
@@ -38,7 +34,5 @@ class Deck():
         #Add the Joker! (It trumps everything)
         self.full_deck.append({'suit': "", 'value': 15, 'display': "JK"})
 
-    def draw(self):
-        return self.full_deck[randint(0,52)]
-
-    
+    def shuffle(self):
+        return self.full_deck
