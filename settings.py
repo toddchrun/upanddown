@@ -24,6 +24,6 @@ class Settings() :
         #Basic Settings
         self.game = "Multiplayer"
         self.number_of_players = 3
-        self.round = 1
+        self.round = 5
         self.max_max_rounds_available = math.trunc(53 / self.number_of_players)
         self.max_rounds = 7

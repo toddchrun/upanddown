@@ -14,4 +14,5 @@ class Player():
         #Player settings
         self.player_name = player_name
         self.player_hand = []
-        self.player = {'name': self.player_name, 'hand': self.player_hand}
+        self.player = {'name': self.player_name, 'hand': self.player_hand,
+            'dealer': False}
