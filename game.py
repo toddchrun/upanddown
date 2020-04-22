@@ -25,6 +25,7 @@ def run_game() :
     #TESTING#
 ###################################
 
+################Initial Sets################
     #Add active players to array NEED MAJOR UPDATES HERE
     active_players = []
     i = 0
@@ -41,19 +42,47 @@ def run_game() :
     deck = Deck()
 
     #Current round - shuffle up a new deck
-    shuffled_deck = deck.shuffle()
     curr_round = settings.round
+################Initial Sets################
+
+
+################Gameplay####################
+
+    #Beginning each round
+    shuffled_deck = deck.shuffle() #fresh shuffle
 
     gf.deal_round(shuffled_deck, curr_round, active_players)
     trick_card = gf.get_trick(shuffled_deck)
     trick_suit = trick_card['suit']
 
-    print("The Trick Card is " + trick_card['display'])
+    #Bid round
+    gf.bid_round(curr_round, active_players, trick_card)
 
-    for i in active_players:
-        print("\n" + i['name'] + " your hand is: ")
-        for j in i['hand']:
-            print(j['display'])
+    #Play round
+    gf.play_round(curr_round, active_players, trick_suit)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # #PURE TESTING
+    # print("The Trick Card is " + trick_card['display'])
+    #
+    # for i in active_players:
+    #     print("\n" + i['name'] + " your hand is: ")
+    #     for j in i['hand']:
+    #         print(j['display'])
+    #
+    # print(settings.round_array)
 
 
 run_game()

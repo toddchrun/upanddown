@@ -10,10 +10,10 @@ class Settings() :
     def __init__(self) :
         """Initializes static settings"""
 
-        # #Screen Settings
-        # self.screen_width = 1200
-        # self.screen_height = 800
-        # self.bg_color = (230, 230, 230)
+        #Screen Settings
+        self.screen_width = 1200
+        self.screen_height = 800
+        self.bg_color = (230, 230, 230)
 
         #Basic options
         self.game_option = ["Single Player", "Multiplayer"]
@@ -21,9 +21,24 @@ class Settings() :
         self.game_difficulty_option = ["Easy", "Intermediate", "Hard"]
         self.exact_mode_option = True
 
-        #Basic Settings
+        #Basic settings
         self.game = "Multiplayer"
         self.number_of_players = 3
-        self.round = 5
-        self.max_max_rounds_available = math.trunc(53 / self.number_of_players)
+        self.round = 1
+        self.max_rounds_available = math.trunc(53 / self.number_of_players)
+
+        #Make sure max rounds will have enough cards!
         self.max_rounds = 7
+        try:
+            self.max_rounds < self.max_rounds_available
+        except:
+            self.max_rounds = self.max_rounds_available
+
+        #Game settings
+
+        #Sets an array for number of cards to be dealt in a given round
+        self.round_array = []
+        for round in range(1, self.max_rounds+1):
+            self.round_array.append(round)
+        for round in range(1, self.max_rounds+1):
+            self.round_array.insert(self.max_rounds, round) #continually adds to countdown from max to 1

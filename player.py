@@ -15,4 +15,4 @@ class Player():
         self.player_name = player_name
         self.player_hand = []
         self.player = {'name': self.player_name, 'hand': self.player_hand,
-            'dealer': False}
+            'dealer': False, 'score': 0, 'bid': 0, 'curr_round_tricks': 0}
