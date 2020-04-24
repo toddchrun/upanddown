@@ -32,7 +32,7 @@ class Deck():
                 self.full_deck.append({'suit': suit, 'value': value, 'display': self.display})
 
         #Add the Joker! (It trumps everything)
-        self.full_deck.append({'suit': "", 'value': 15, 'display': "JK"})
+        self.full_deck.append({'suit': "joker", 'value': 15, 'display': "JK"})
 
     def shuffle(self):
         return self.full_deck

@@ -24,7 +24,7 @@ class Settings() :
         #Basic settings
         self.game = "Multiplayer"
         self.number_of_players = 3
-        self.round = 1
+        self.round = 2
         self.max_rounds_available = math.trunc(53 / self.number_of_players)
 
         #Make sure max rounds will have enough cards!
