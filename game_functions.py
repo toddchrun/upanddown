@@ -18,7 +18,7 @@ def deal_round(curr_deck, curr_round, active_players):
     #Deal out cards (number based on current round) to each player
     while curr_round > 0:
         for i in range(0, len(active_players)):
-            index = randint(0, max_index)
+            index = randint(0, max_index-1)
             dealt_card = curr_deck[index]
             active_players[i]['hand'].append(dealt_card)
             curr_deck.pop(index)
@@ -31,7 +31,7 @@ def get_trick(curr_deck):
     card whose suit determines trumping suit for the round
     """
 
-    trick_index = randint(0, len(curr_deck))
+    trick_index = randint(0, len(curr_deck)-1)
     trick_card = curr_deck[trick_index]
     return trick_card
 
@@ -49,8 +49,7 @@ def bid_round(curr_round, active_players, trick_card):
     print("Trick Card is " + trick_card['display'])
 
     #Sets order of bidding, dealer is last
-    dealer = active_players.pop(0)
-    active_players.append(dealer)
+    active_players.append(active_players.pop(0))
 
     #Bidding round
     for player in active_players:
@@ -80,11 +79,11 @@ def play_round(curr_round, active_players, trick_suit):
         #initialize empty array to capture all played cards
         round_hand = []
 
-        #reset for each round, object to capture just the first card determining play
-        first_play = {}
-
         #boolean logic to check and see if tricks are broken, can only lead trick when broken
         trick_broken = False
+
+        #check to see if any player has the joker, if so, set suit to be trick_suit
+        check_joker(active_players, trick_suit)
 
         #Prompts player to play after showing hand
         for player in active_players:
@@ -104,6 +103,7 @@ def play_round(curr_round, active_players, trick_suit):
 
     score_round(active_players)
     clear_bids_tricks(active_players)
+    set_dealer(active_players)
 
 def trick_winner(round_hand, active_players, trick_suit):
     """
@@ -160,6 +160,22 @@ def clear_bids_tricks(active_players):
             player['bid'] = 0
             player['curr_round_tricks'] = 0
 
+def set_dealer(active_players):
+    """Called at the end of each hand, resorts the list so the next player is assigned dealer.
+    This player will subsequently be popped to the end during bidding round
+    """
+
+    #will cycle through until original dealer is in position 0
+    while active_players[0]['dealer'] != True:
+        active_players.append(active_players.pop(0))
+
+    #sets original dealer to False and pops to the end of array
+    active_players[0]['dealer'] = False
+    active_players.append(active_players.pop(0))
+
+    #next player in line set to dealer
+    active_players[0]['dealer'] = True
+
 def display_hand(player):
     """
     Just loops through hand to display, eventually not needed or needs major overhaul
@@ -168,6 +184,16 @@ def display_hand(player):
     print("\n" + player['name'] + " it's your turn.  Your hand: ")
     for card in player['hand']:
         print(card['display'])
+
+def check_joker(active_players, trick_suit):
+    """
+    Checked to begin each hand, if a player has the joker, set it's suit to trick suit
+    """
+
+    for player in active_players:
+        for card in player['hand']:
+            if card['display'] == "JK":
+                card['suit'] = trick_suit
 
 def check_for_only_tricks(player, trick_suit):
     """
@@ -214,6 +240,7 @@ def validate_first_play(play, player, round_hand, trick_broken, only_tricks, tri
     idx = 0
     while idx < len(player['hand']):
         if player['hand'][idx]['display'] == play:
+
             if (only_tricks == True) or (trick_broken == True):
                 trick_broken = True
                 valid_play = True
@@ -225,6 +252,7 @@ def validate_first_play(play, player, round_hand, trick_broken, only_tricks, tri
                 round_hand.append([player['name'], player['hand'][idx]['value'], player['hand'][idx]['suit']])
                 player['hand'].pop(idx)
                 break
+
         idx += 1
     return valid_play
 
