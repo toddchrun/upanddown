@@ -24,11 +24,11 @@ class Settings() :
         #Basic settings
         self.game = "Multiplayer"
         self.number_of_players = 3
-        self.round = 2
+        self.starting_round = 1
         self.max_rounds_available = math.trunc(53 / self.number_of_players)
 
         #Make sure max rounds will have enough cards!
-        self.max_rounds = 7
+        self.max_rounds = 3
         try:
             self.max_rounds < self.max_rounds_available
         except:
@@ -38,7 +38,7 @@ class Settings() :
 
         #Sets an array for number of cards to be dealt in a given round
         self.round_array = []
-        for round in range(1, self.max_rounds+1):
+        for round in range(self.starting_round, self.max_rounds+1):
             self.round_array.append(round)
-        for round in range(1, self.max_rounds+1):
+        for round in range(self.starting_round, self.max_rounds+1):
             self.round_array.insert(self.max_rounds, round) #continually adds to countdown from max to 1
