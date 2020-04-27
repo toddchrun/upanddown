@@ -46,7 +46,7 @@ def run_game() :
 
 ################Gameplay####################
 
-    for idx in range(0, len(settings.round_array)+1):
+    for idx in range(0, len(settings.round_array)):
 
         curr_round = settings.round_array[idx]
 
@@ -62,6 +62,8 @@ def run_game() :
 
         #Play round
         gf.play_round(curr_round, active_players, trick_suit)
+
+    print(active_players)
 
 ################Gameplay####################
 
