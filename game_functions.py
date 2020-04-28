@@ -96,7 +96,7 @@ def play_round(curr_round, active_players, trick_suit):
 
             play_card(player, round_hand, trick_broken, only_tricks, trick_suit)
 
-        #After a given hand, check to see if the trick was broken.  If so, the next hand can be led with trick 
+        #After a given hand, check to see if the trick was broken.  If so, the next hand can be led with trick
         trick_broken = check_for_trick_broken(round_hand, trick_suit, trick_broken)
 
         count += 1
@@ -150,7 +150,6 @@ def score_round(active_players):
     for player in active_players:
         if player['bid'] == player['curr_round_tricks']:
             player['score'] += (10 + player['bid'])
-    print(active_players)
 
 def clear_bids_tricks(active_players):
     """
@@ -225,7 +224,6 @@ def play_card(player, round_hand, trick_broken, only_tricks, trick_suit):
     Functionality for prompting a play from each player.  Includes validating
     each play based on what was played first, if tricks were broken, etc.
     """
-    print(trick_broken)
     valid_play = False
 
     #if first play of the round, all is valid unless
@@ -255,7 +253,6 @@ def validate_first_play(play, player, round_hand, trick_broken, only_tricks, tri
             if only_tricks == True:
                 valid_play = True
                 round_hand.append([player['name'], player['hand'][idx]['value'], player['hand'][idx]['suit']])
-                print(round_hand)
                 player['hand'].pop(idx)
                 break
             elif trick_broken > 0:

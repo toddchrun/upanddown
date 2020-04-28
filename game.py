@@ -7,6 +7,7 @@ from settings import Settings
 from pygame.sprite import Group
 from player import Player
 from deck import Deck
+from scoreboard import Scoreboard
 from settings import Settings
 import game_functions as gf
 
@@ -15,7 +16,7 @@ def run_game() :
     """Initializes the game and creates a screen object"""
 
     # pygame.init()
-    settings = Settings()
+
 
     # screen = pygame.display.set_mode(
     #     (uadtr_settings.screen_width,uadtr_settings.screen_height))
@@ -26,6 +27,9 @@ def run_game() :
 ###################################
 
 ################Initial Sets################
+
+    settings = Settings()
+
     #Add active players to array NEED MAJOR UPDATES HERE
     active_players = []
     i = 0
@@ -40,6 +44,9 @@ def run_game() :
 
     #setting up new
     deck = Deck()
+
+    #scoreboard
+    score = Scoreboard()
 
 ################Initial Sets################
 
@@ -63,7 +70,8 @@ def run_game() :
         #Play round
         gf.play_round(curr_round, active_players, trick_suit)
 
-    print(active_players)
+        #Display score
+        score.get_score(active_players)
 
 ################Gameplay####################
 
