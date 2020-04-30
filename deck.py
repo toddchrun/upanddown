@@ -3,13 +3,14 @@
 #   Used to build initial deck of 52 cards (plus insertion of Joker)
 #   Function to draw - returns random card while keeping track of its index
 ###############################################################################
+from card import Card
 
 class Deck():
     """
     Class for every deck
     """
 
-    def __init__(self):
+    def __init__(self, settings, screen):
         super(Deck, self).__init__()
 
         #initialize indices
@@ -21,18 +22,20 @@ class Deck():
         self.full_deck = []
 
         #build full deck
-        self.build_deck();
+        self.build_deck(settings, screen);
 
-    def build_deck(self):
+    def build_deck(self, settings, screen):
 
         #build a deck of 52 cards, Ace through King, 4 suits
         for suit in self.suit_index:
             for key, value in self.value_index.items():
                 self.display = key + suit
-                self.full_deck.append({'suit': suit, 'value': value, 'display': self.display})
+                card = Card(settings, screen, suit, value, self.display)
+                self.full_deck.append(card)
 
         #Add the Joker! (It trumps everything)
-        self.full_deck.append({'suit': "joker", 'value': 15, 'display': "JK"})
+        joker = Card(settings, screen, "joker", 15, "JK")
+        self.full_deck.append(joker)
 
     def shuffle(self):
         return self.full_deck

@@ -22,7 +22,7 @@ class Scoreboard():
             return(sorted(sub_li, key = lambda x: x[1], reverse=True))
 
         for player in active_players:
-            self.sorted_scores.append([player['name'], player['score']])
+            self.sorted_scores.append([player.name, player.score])
 
         print("Current Score: ")
         print(Sort(self.sorted_scores))

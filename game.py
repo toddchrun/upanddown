@@ -10,45 +10,55 @@ from deck import Deck
 from scoreboard import Scoreboard
 from settings import Settings
 import game_functions as gf
+import screen_functions as sf
 
 
 def run_game() :
     """Initializes the game and creates a screen object"""
 
-    # pygame.init()
+################Screen Setting################
+    pygame.init()
+    settings = Settings()
 
+    screen = pygame.display.set_mode(
+        (settings.screen_width, settings.screen_height))
+    pygame.display.set_caption("Up and Down the River")
 
-    # screen = pygame.display.set_mode(
-    #     (uadtr_settings.screen_width,uadtr_settings.screen_height))
-    # pygame.display.set_caption("Up and Down the River")
+    #Inital scren
+    sf.update_screen(settings, screen)
+################Screen Setting################
 
-
-    #TESTING#
-###################################
 
 ################Initial Sets################
-
-    settings = Settings()
 
     #Add active players to array NEED MAJOR UPDATES HERE
     active_players = []
     i = 0
     while i < settings.number_of_players:
         new_player_name = "Player " + str(i+1)
-        new_player = Player(new_player_name)
-        active_players.append(new_player.player)
-        i = i + 1
+        player_id = i
+        active_players.append(Player(player_id, new_player_name))
+        i += 1
 
     #Set dealer
-    active_players[0]['dealer'] = True
+    active_players[0].dealer = True
+
+    #Set player position on screen
+    sf.set_player_position(settings, screen, active_players)
 
     #setting up new
-    deck = Deck()
+    deck = Deck(settings, screen)
 
     #scoreboard
     score = Scoreboard()
 
 ################Initial Sets################
+
+################Testing################
+    # shuffled_deck = deck.shuffle()
+    #
+    # for card in shuffled_deck:
+    #     print(card.display)
 
 
 ################Gameplay####################
@@ -62,13 +72,12 @@ def run_game() :
 
         gf.deal_round(shuffled_deck, curr_round, active_players)
         trick_card = gf.get_trick(shuffled_deck)
-        trick_suit = trick_card['suit']
 
         #Bid round
         gf.bid_round(curr_round, active_players, trick_card)
 
         #Play round
-        gf.play_round(curr_round, active_players, trick_suit)
+        gf.play_round(curr_round, active_players, trick_card.suit)
 
         #Display score
         score.get_score(active_players)

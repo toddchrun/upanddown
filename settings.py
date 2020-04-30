@@ -13,7 +13,7 @@ class Settings() :
         #Screen Settings
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (34, 139, 34)
 
         #Basic options
         self.game_option = ["Single Player", "Multiplayer"]
@@ -33,8 +33,6 @@ class Settings() :
             self.max_rounds < self.max_rounds_available
         except:
             self.max_rounds = self.max_rounds_available
-
-        #Game settings
 
         #Sets an array for number of cards to be dealt in a given round
         self.round_array = []
