@@ -4,9 +4,12 @@ Game functions for Up and Down the River
 
 import sys
 import pygame
+from pygame.sprite import Group
 from random import randint
 from card import Card
 from player import Player
+import screen_functions as sf
+
 
 def deal_round(curr_deck, curr_round, active_players):
     """
@@ -15,118 +18,116 @@ def deal_round(curr_deck, curr_round, active_players):
     object
     """
 
+    counter = curr_round
+
     #Deal out cards (number based on current round) to each player
-    while curr_round > 0:
+    while counter > 0:
         for i in range(0, len(active_players)):
-            index = randint(0, len(curr_deck) - 1)
-            active_players[i].hand.append(curr_deck[index])
-            curr_deck.pop(index)
-        curr_round -= 1
+            idx = randint(0, len(curr_deck)-1)
+            active_players[i].hand.add(curr_deck[idx])
+            curr_deck.pop(idx)
+        counter -= 1
 
 def get_trick(curr_deck):
     """Returns random card from remaining deck to be the trick"""
 
     return curr_deck[randint(0, len(curr_deck)-1)]
 
-def bid_round(curr_round, active_players, trick_card):
+def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card):
     """
     Cycles through each player to determine number of cards they wish to bid for
     the current round.
     """
-
-    print("Round " + str(curr_round))
-    print("Trick Card is " + trick_card.display)
-
     #Sets order of bidding, dealer is last
     active_players.append(active_players.pop(0))
 
-    #Bidding round
+    #main loop to continue through until all bids have been validated
     for player in active_players:
-        valid_bid = False
-        display_hand(player)
+        player.turn_active = True
 
-        #Validate the bid input from user
-        while not valid_bid:
-            bid_input = input("\n" + player.name + " please bid: ")
-            try:
-                bid = int(bid_input)
-            except:
-                continue
-            #validate bid
-            if (bid <= curr_round):
-                valid_bid = True
+        while player.turn_active:
+            sf.update_screen(settings, screen, table, active_players, pile, trick_card)
+            sf.check_bids(settings, screen, table, player, pile, curr_round)
 
-        player.bid = bid
 
-def play_round(curr_round, active_players, trick_suit):
+def play_round(settings, screen, table, curr_round, active_players, pile, trick_card):
     """Plays the round based on current number of cards and trick."""
-
-    #boolean logic to check and see if tricks are broken, can only lead trick when broken
-    trick_broken = False
 
     count = 0
     while count < curr_round:
 
-        #initialize empty array to capture all played cards
-        round_hand = []
-
         #check to see if any player has the joker, if so, set suit to be trick_suit
-        check_joker(active_players, trick_suit)
+        check_joker(active_players, trick_card.suit)
 
         #Prompts player to play after showing hand
         for player in active_players:
+            player.turn_active = True
 
             #For each turn checks to see if a player has only tricks, if so, they can lead with a trick
-            only_tricks = False
-            only_tricks = check_for_only_tricks(player, trick_suit)
+            check_for_only_tricks(player, trick_card.suit)
 
-            display_hand(player)
-
-            play_card(player, round_hand, trick_broken, only_tricks, trick_suit)
+            while player.turn_active:
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card)
+                sf.check_play(settings, screen, table, player, pile, trick_card, curr_round)
 
         #After a given hand, check to see if the trick was broken.  If so, the next hand can be led with trick
-        trick_broken = check_for_trick_broken(round_hand, trick_suit, trick_broken)
+        check_for_trick_broken(pile, trick_card)
 
         count += 1
 
         #Passes the whole turn into trick determining function
-        trick_winner(round_hand, active_players, trick_suit)
+        trick_winner(pile, active_players, trick_card)
+
+        #Clears out the discard pile
+        clear_discards(pile)
 
     score_round(active_players)
     clear_bids_tricks(active_players)
+    trick_card.trick_broken = False
     set_dealer(active_players)
 
-def trick_winner(round_hand, active_players, trick_suit):
+def trick_winner(pile, active_players, trick_card):
     """Determines trick winner by passing all played hands and trick suit"""
 
+    #Need a false bool for each hand, even if trick broken, one may have not been played
     trick_played = False
     max_value = 0
 
+    #Establishes sprite list
+    round_hand = pile.discards.sprites()
+
     #Goes through all cards to determine if a trick was played
-    for i in round_hand:
-        if (i[2] == trick_suit):
+    for card in pile.discards:
+        if (card.suit == trick_card.suit):
             trick_played = True
+            trick_suit = trick_card.suit
 
     #If no trick is played, set trick suit to the first card played
     if not trick_played:
-        trick_suit = round_hand[0][2]
+        trick_suit = round_hand[0].suit
 
     #Max value set for player playing highest value of trick suit
-    for i in round_hand:
-        if (i[2] == trick_suit):
-            if (i[1] > max_value):
-                max_value = i[1]
-                leader = i[0]
+    for card in round_hand:
+        if (card.suit == trick_suit):
+            if (card.value > max_value):
+                max_value = card.value
+                winning_card = card  #only one winning card, played id will determine winner
 
     #Increments number of tricks won for round winner
     for player in active_players:
-        if player.id == leader:
+        if player.id == winning_card.played_id:
             player.curr_round_tricks += 1
-            print(player.name + " wins the hand!")
 
     #Need to re-sort list based on winner
-    while active_players[0].id != leader:
+    while active_players[0].id != winning_card.played_id:
         active_players.append(active_players.pop(0))
+
+def clear_discards(pile):
+    """Clears out the discard pile, resets each cards played id as well"""
+
+    for card in pile.discards:
+        card.played_id = int()
+        pile.discards.remove(card)
 
 def score_round(active_players):
     """
@@ -145,6 +146,7 @@ def clear_bids_tricks(active_players):
     for player in active_players:
         player.bid = 0
         player.curr_round_tricks = 0
+        player.has_only_tricks = False
 
 def set_dealer(active_players):
     """Called at the end of each hand, resorts the list so the next player is assigned dealer.
@@ -161,15 +163,6 @@ def set_dealer(active_players):
 
     #next player in line set to dealer
     active_players[0].dealer = True
-
-def display_hand(player):
-    """
-    Just loops through hand to display, eventually not needed or needs major overhaul
-    """
-
-    print("\n" + player.name + " it's your turn.  Your hand: ")
-    for card in player.hand:
-        print(card.display)
 
 def check_joker(active_players, trick_suit):
     """
@@ -188,101 +181,17 @@ def check_for_only_tricks(player, trick_suit):
 
     for card in player.hand:
         if (trick_suit == card.suit):
-            only_tricks = True
+            player.has_only_tricks = True
         else:
-            only_tricks = False
+            player.has_only_tricks = False
             break #kill loop early, if one card is not trick, no need to check others
-    return only_tricks
 
-def check_for_trick_broken(round_hand, trick_suit, trick_broken):
+def check_for_trick_broken(pile, trick_card):
     """
     Called prior to every play, if the player only has tricks, they can play one to start
     """
 
-    for hand in round_hand:
-        if (trick_suit == hand[2]):
-            trick_broken = True
+    for hand in pile.discards:
+        if (hand.suit == trick_card.suit):
+            trick_card.trick_broken = True
             break
-    return trick_broken
-
-def play_card(player, round_hand, trick_broken, only_tricks, trick_suit):
-    """
-    Functionality for prompting a play from each player.  Includes validating
-    each play based on what was played first, if tricks were broken, etc.
-    """
-    valid_play = False
-
-    #if first play of the round, all is valid unless
-    if len(round_hand) == 0:
-        while valid_play == False: #this will loop until we get a valid card play
-
-            play = input("\n" + player.name + " what card will you play (enter same display)?: ")
-            valid_play = validate_first_play(play, player, round_hand, trick_broken, only_tricks, trick_suit, valid_play)
-
-    #else block will cover all the other plays during the round, first play suit will dictate
-    else:
-        while valid_play == False: #this will loop until we get a valid card play
-
-            play = input("\n" + player.name + " what card will you play (enter same display)?: ")
-            valid_play = validate_play(play, player, round_hand, trick_broken, only_tricks, trick_suit, valid_play)
-
-
-def validate_first_play(play, player, round_hand, trick_broken, only_tricks, trick_suit, valid_play):
-    """
-    Validates the first play of each hand.  Also appends the valid play to the round_hand
-    and makes sure to remove the card from the player's hand
-    """
-
-    idx = 0
-    while idx < len(player.hand):
-        if player.hand[idx].display == play:
-            if only_tricks == True:
-                valid_play = True
-                round_hand.append([player.id, player.hand[idx].value, player.hand[idx].suit])
-                player.hand.pop(idx)
-                break
-            elif trick_broken:
-                valid_play = True
-                round_hand.append([player.id, player.hand[idx].value, player.hand[idx].suit])
-                player.hand.pop(idx)
-                break
-            elif player.hand[idx].suit != trick_suit:
-                valid_play = True
-                round_hand.append([player.id, player.hand[idx].value, player.hand[idx].suit])
-                player.hand.pop(idx)
-                break
-
-        idx += 1
-    return valid_play
-
-def validate_play(play, player, round_hand, trick_broken, only_tricks, trick_suit, valid_play):
-    """
-    Validates each subsequent play in the round, first play will dictate what can be played
-    """
-
-    #if player has the first suit played, they can only play that suit
-    has_suit = False
-
-    #cycles through player hand to see if they have first play suit
-    for card in player.hand:
-        if card.suit == round_hand[0][2]:
-            has_suit = True
-            break
-
-    #prompt loop to grab player hand, only can play when valid
-    idx = 0
-    while idx < len(player.hand):
-        if player.hand[idx].display == play:
-            if has_suit == False:
-                valid_play = True
-                round_hand.append([player.id, player.hand[idx].value, player.hand[idx].suit])
-                player.hand.pop(idx)
-                break
-            elif player.hand[idx].suit == round_hand[0][2]:
-                valid_play = True
-                round_hand.append([player.id, player.hand[idx].value, player.hand[idx].suit])
-                player.hand.pop(idx)
-                break
-        idx += 1
-
-    return valid_play

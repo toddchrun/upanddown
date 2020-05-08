@@ -11,7 +11,7 @@ class Settings() :
         """Initializes static settings"""
 
         #Screen Settings
-        self.screen_width = 1200
+        self.screen_width = 1400
         self.screen_height = 800
         self.bg_color = (34, 139, 34)
 
@@ -23,9 +23,11 @@ class Settings() :
 
         #Basic settings
         self.game = "Multiplayer"
-        self.number_of_players = 3
+        self.number_of_players = 4
         self.starting_round = 1
         self.max_rounds_available = math.trunc(53 / self.number_of_players)
+        self.trick_x = self.screen_width * .35 #trick set
+        self.trick_y = (self.screen_height / 2) - (.071875 * self.screen_height) #Set for card to be centered
 
         #Make sure max rounds will have enough cards!
         self.max_rounds = 3

@@ -7,31 +7,64 @@ from pygame.sprite import Sprite
 
 class Card(Sprite):
 
-    def __init__(self, settings, screen, suit, value, display):
+    def __init__(self, settings, screen, suit, value, display, sort_index):
         """
         Initalizes each card to be displayed
         """
 
         super().__init__()
 
-        #Visual Settings for each card
+        #Visual Settings
         self.settings = settings
         self.screen = screen
-
-        self.image = pygame.image.load('images/' + display + '.png')
-        self.rect = self.image.get_rect()
-
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
-        self.x = float(self.rect.x)
+        self.screen_rect = screen.get_rect()
 
         #Card settings
         self.suit = suit
         self.value = value
         self.display = display
+        self.sort_index = sort_index
+        self.face_up = True
+        self.selected = False
+        self.trick_broken = False
+        self.played_id = int()  #tracks the person that played the card
 
+        #Set card image
+        self.image = pygame.image.load('images/' + self.display + '.png')
+        self.rect = self.image.get_rect()
+        self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
 
     def blitme(self) :
         """Draw card at current location"""
 
         self.screen.blit(self.image, self.rect)
+
+    def update_card_position(self, pos_x, pos_y):
+        """Sets specfic location of each card based on screen object"""
+
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+
+    def flip_card(self):
+        """Flips display"""
+
+        self.face_up = not self.face_up
+
+        if self.face_up:
+            self.image = pygame.image.load('images/' + self.display + '.png')
+            self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
+        else:
+            self.image = pygame.image.load('images/card.png')
+            self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
+
+    def select_card(self):
+        """Switches card as candidate for selection, needs double click feature"""
+
+        self.selected = True
+        self.rect.y -= (.01 * self.settings.screen_height)
+
+    def deselect_card(self):
+        """Switches card back to not being a play candidate"""
+
+        self.selected = False
+        self.rect.y += (.01 * self.settings.screen_height)
