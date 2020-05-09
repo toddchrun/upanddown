@@ -38,7 +38,7 @@ def update_screen(settings, screen, table, active_players, pile, trick_card) :
     #Display all hands
     for player in active_players:
         display_cards(screen, player)
-        player.show_player(player.score, player.bid)
+        player.show_player(player.score, player.bid, player.curr_round_tricks, player.turn_active)
 
     #Display Trick Card
     trick_card.blitme()
@@ -86,8 +86,8 @@ def set_player_position(settings, screen, active_players):
         active_players[index].x_center = position_index[index][2]
 
     for player in active_players:
-        player.set_top_text(player.score)
-        player.set_bottom_text(player.bid)
+        player.set_top_text(player.score, player.turn_active)
+        player.set_bottom_text(player.bid, player.curr_round_tricks, player.turn_active)
 
 
 def set_card_pos(settings, screen, active_players):
@@ -168,7 +168,6 @@ def check_keydown_events(settings, screen, event, player, curr_round):
     if (bid >= 0) and (bid <= curr_round):
         player.bid = bid
         player.turn_active = False
-        print(player.name, player.bid)
 
 def validate_first_play(player, card, trick_card):
     """

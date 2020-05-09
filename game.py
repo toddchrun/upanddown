@@ -93,7 +93,6 @@ def run_game() :
 
         #Beginning each round with a fresh deck
         shuffled_deck = deck.shuffle(settings, screen)
-        print(len(shuffled_deck))
 
         #Refreshes the discard pile
         pile = Pile(settings, screen)
