@@ -13,6 +13,7 @@ from table import Table
 from discard_pile import Pile
 from scoreboard import Scoreboard
 from settings import Settings
+from action_message import Message
 import game_functions as gf
 import screen_functions as sf
 
@@ -55,6 +56,9 @@ def run_game() :
 
     #table instance
     table = Table(settings, screen)
+
+    #active message instance
+    message = Message(settings, screen)
 
 ################Initial Sets################
 
@@ -108,10 +112,10 @@ def run_game() :
         sf.set_card_pos(settings, screen, active_players)
 
         #Bid round - pass around each turn until
-        gf.bid_round(settings, screen, table, curr_round, active_players, pile, trick_card)
+        gf.bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message)
 
         #Play round
-        gf.play_round(settings, screen, table, curr_round, active_players, pile, trick_card)
+        gf.play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message)
 
 
 ################Gameplay####################

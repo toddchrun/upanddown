@@ -28,7 +28,7 @@ def check_bids(settings, screen, table, player, pile, curr_round):
         elif event.type == pygame.KEYDOWN :
             check_keydown_events(settings, screen, event, player, curr_round)
 
-def update_screen(settings, screen, table, active_players, pile, trick_card) :
+def update_screen(settings, screen, table, active_players, pile, trick_card, message) :
     """Updates the images on the screen"""
 
     #Basic display drawing/fill
@@ -42,6 +42,9 @@ def update_screen(settings, screen, table, active_players, pile, trick_card) :
 
     #Display Trick Card
     trick_card.blitme()
+
+    #Display current action
+    message.show_message()
 
     #Display discard pile
     pile.discards.draw(screen)

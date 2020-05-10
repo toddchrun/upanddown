@@ -33,7 +33,7 @@ def get_trick(curr_deck):
 
     return curr_deck[randint(0, len(curr_deck)-1)]
 
-def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card):
+def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message):
     """
     Cycles through each player to determine number of cards they wish to bid for
     the current round.
@@ -46,11 +46,11 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
         player.turn_active = True
 
         while player.turn_active:
-            sf.update_screen(settings, screen, table, active_players, pile, trick_card)
+            sf.update_screen(settings, screen, table, active_players, pile, trick_card, message)
             sf.check_bids(settings, screen, table, player, pile, curr_round)
 
 
-def play_round(settings, screen, table, curr_round, active_players, pile, trick_card):
+def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message):
     """Plays the round based on current number of cards and trick."""
 
     count = 0
@@ -67,7 +67,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
             check_for_only_tricks(player, trick_card.suit)
 
             while player.turn_active:
-                sf.update_screen(settings, screen, table, active_players, pile, trick_card)
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message)
                 sf.check_play(settings, screen, table, player, pile, trick_card, curr_round)
 
         #After a given hand, check to see if the trick was broken.  If so, the next hand can be led with trick
