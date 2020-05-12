@@ -11,12 +11,19 @@ from player import Player
 import screen_functions as sf
 
 
-def deal_round(curr_deck, curr_round, active_players):
+def deal_round(settings, screen, table, active_players, pile, message, deck, curr_deck, curr_round):
     """
     Deals cards to every player, total cards equals the current round.  Cards
     are dealt to the left of the dealer and continually removed from the Deck
     object
     """
+
+    deck.dealt = False #Bool to activate deal function
+
+    while not deck.dealt:
+        message.update_message("Click the deck to deal!", 0)
+        sf.update_screen(settings, screen, table, active_players, pile, None, message, deck)
+        sf.check_for_deal(settings, screen, deck)
 
     counter = curr_round
 
@@ -33,7 +40,7 @@ def get_trick(curr_deck):
 
     return curr_deck[randint(0, len(curr_deck)-1)]
 
-def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message):
+def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck):
     """
     Cycles through each player to determine number of cards they wish to bid for
     the current round.
@@ -47,11 +54,11 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
         message.update_message(player.name + ", it's your bid!", .15) #150 millisecond delay
 
         while player.turn_active:
-            sf.update_screen(settings, screen, table, active_players, pile, trick_card, message)
+            sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
             sf.check_bids(settings, screen, table, player, pile, curr_round, message)
 
 
-def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message):
+def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck):
     """Plays the round based on current number of cards and trick."""
 
     count = 0
@@ -69,8 +76,13 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
             check_for_only_tricks(player, trick_card.suit)
 
             while player.turn_active:
-                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message)
-                sf.check_play(settings, screen, table, player, pile, trick_card, curr_round)
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                sf.check_play(settings, screen, table, player, pile, trick_card, curr_round, message)
+
+            #Resets any card that may have been selected
+            for card in player.hand:
+                if card.selected:
+                    card.deselect_card()
 
         #After a given hand, check to see if the trick was broken.  If so, the next hand can be led with trick
         check_for_trick_broken(pile, trick_card)

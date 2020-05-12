@@ -64,29 +64,6 @@ def run_game() :
 
 ################Testing################
 
-    # curr_round = 6
-    #
-    # #Beginning each round
-    # shuffled_deck = deck.shuffle() #fresh shuffle
-    #
-    # #Refreshes the discard pile
-    # pile = Pile(settings, screen)
-    #
-    # gf.deal_round(shuffled_deck, curr_round, active_players)
-    # trick_card = gf.get_trick(shuffled_deck)
-    # trick_card.update_card_position(settings.trick_x, settings.trick_y)
-    # trick_card.flip_card()
-    #
-    # for card in active_players[0].hand:
-    #     card.flip_card()
-    #
-    # #Sets each card's position to be displayed
-    # sf.sort_cards(active_players, trick_card)
-    # sf.set_card_pos(settings, screen, active_players)
-    #
-    # while True:
-    #     sf.update_screen(settings, screen, table, active_players, pile, trick_card)
-    #     sf.check_events(settings, screen, table, active_players, pile)
 
 ################Gameplay####################
 
@@ -102,7 +79,7 @@ def run_game() :
         pile = Pile(settings, screen)
 
         #start of each round - deal out cards to every player and then flip a trick card
-        gf.deal_round(shuffled_deck, curr_round, active_players)
+        gf.deal_round(settings, screen, table, active_players, pile, message, deck, shuffled_deck, curr_round)
         trick_card = gf.get_trick(shuffled_deck)
         trick_card.update_card_position(settings.trick_x, settings.trick_y)
         # trick_card.flip_card()
@@ -112,10 +89,10 @@ def run_game() :
         sf.set_card_pos(settings, screen, active_players)
 
         #Bid round - pass around each turn until
-        gf.bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message)
+        gf.bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck)
 
         #Play round
-        gf.play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message)
+        gf.play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck)
 
 
 ################Gameplay####################

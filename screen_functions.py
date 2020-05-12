@@ -9,7 +9,17 @@ from discard_pile import Pile
 from pygame.sprite import Group
 
 #Make this a general check events?  Need a separate one to test each player's turn
-def check_play(settings, screen, table, player, pile, trick_card, curr_round):
+def check_for_deal(settings, screen, deck):
+    """Loops until deck is clicked and cards can be dealt"""
+
+    for event in pygame.event.get() :
+        if event.type == pygame.QUIT :
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN :
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_deck_click(deck, mouse_x, mouse_y)
+
+def check_play(settings, screen, table, player, pile, trick_card, curr_round, message):
     """Responses to mouse actions"""
 
     for event in pygame.event.get() :
@@ -17,7 +27,7 @@ def check_play(settings, screen, table, player, pile, trick_card, curr_round):
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN :
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_card_clicked(settings, screen, player, pile, trick_card, mouse_x, mouse_y)
+            check_card_clicked(settings, screen, player, pile, trick_card, message, mouse_x, mouse_y)
 
 def check_bids(settings, screen, table, player, pile, curr_round, message):
     """Waits for valid bid"""
@@ -28,20 +38,22 @@ def check_bids(settings, screen, table, player, pile, curr_round, message):
         elif event.type == pygame.KEYDOWN :
             check_keydown_events(settings, screen, event, player, curr_round, message)
 
-def update_screen(settings, screen, table, active_players, pile, trick_card, message) :
+def update_screen(settings, screen, table, active_players, pile, trick_card, message, deck) :
     """Updates the images on the screen"""
 
     #Basic display drawing/fill
     screen.fill(settings.bg_color)
     table.blitme()
+    deck.show_deck()
 
     #Display all hands
     for player in active_players:
         display_cards(screen, player)
         player.show_player(player.score, player.bid, player.curr_round_tricks, player.turn_active)
 
-    #Display Trick Card
-    trick_card.blitme()
+    #Display Trick Card if deck is dealt
+    if deck.dealt:
+        trick_card.blitme()
 
     #Display current action
     message.show_message()
@@ -131,16 +143,16 @@ def sort_cards(active_players, trick_card):
             player.hand.add(trick)
 
 
-def check_card_clicked(settings, screen, player, pile, trick_card, mouse_x, mouse_y):
+def check_card_clicked(settings, screen, player, pile, trick_card, message, mouse_x, mouse_y):
 
     for card in reversed(player.hand.sprites()):
         if (card.rect.collidepoint(mouse_x, mouse_y) and card.selected):
             valid_play = False
 
             if len(pile.discards) == 0:
-                valid_play = validate_first_play(player, card, trick_card)
+                valid_play = validate_first_play(player, card, trick_card, message)
             else:
-                valid_play = validate_play(player, card, pile)
+                valid_play = validate_play(player, card, pile, message)
 
             if valid_play: #if this is valid, card will be officially played
                 card.played_id = player.id
@@ -154,6 +166,13 @@ def check_card_clicked(settings, screen, player, pile, trick_card, mouse_x, mous
         elif card.rect.collidepoint(mouse_x, mouse_y):
             card.select_card()
             break
+
+def check_deck_click(deck, mouse_x, mouse_y):
+    """If deck image clicked, deal the round"""
+
+    #If the deck image is clicked, set dealt status to True to begin dealing
+    if (deck.rect.collidepoint(mouse_x, mouse_y)):
+        deck.dealt = True
 
 def add_to_discard_pile(settings, screen, pile, card):
     """Adds played card to discard pile"""
@@ -175,7 +194,7 @@ def check_keydown_events(settings, screen, event, player, curr_round, message):
         message.update_message("Incorrect bid! Your bid must be between 0 and " + str(curr_round) + ".", .5)
 
 
-def validate_first_play(player, card, trick_card):
+def validate_first_play(player, card, trick_card, message):
     """
     Validates the first play of each hand.
     """
@@ -187,10 +206,12 @@ def validate_first_play(player, card, trick_card):
         valid_play = True
     elif card.suit != trick_card.suit:
         valid_play = True
+    else:
+        message.update_message("Trick suit not broken!", .50)
 
     return valid_play
 
-def validate_play(player, card, pile):
+def validate_play(player, card, pile, message):
     """
     Validates each subsequent play in the round, first play will dictate what can be played
     """
@@ -214,5 +235,7 @@ def validate_play(player, card, pile):
         valid_play = True
     elif card.suit == starting_suit:
         valid_play = True
+    else:
+        message.update_message("You must play the first suit played!", .50)
 
     return valid_play

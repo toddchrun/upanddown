@@ -40,7 +40,7 @@ class Message():
 
         self.message_image = self.font.render(self.msg, True, self.text_color)
 
-        self.screen.blit(self.message_image, self.message_rect)
+        self.show_message()
 
         time.sleep(pause)
 

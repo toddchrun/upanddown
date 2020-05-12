@@ -32,7 +32,10 @@ class Card(Sprite):
         #Set card image
         self.image = pygame.image.load('images/' + self.display + '.png')
         self.rect = self.image.get_rect()
+
+        #Scales the original card to half its size
         self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
+        self.rect = self.image.get_rect()
 
     def blitme(self) :
         """Draw card at current location"""
