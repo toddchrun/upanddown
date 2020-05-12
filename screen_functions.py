@@ -19,14 +19,14 @@ def check_play(settings, screen, table, player, pile, trick_card, curr_round):
             mouse_x, mouse_y = pygame.mouse.get_pos()
             check_card_clicked(settings, screen, player, pile, trick_card, mouse_x, mouse_y)
 
-def check_bids(settings, screen, table, player, pile, curr_round):
+def check_bids(settings, screen, table, player, pile, curr_round, message):
     """Waits for valid bid"""
 
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             sys.exit()
         elif event.type == pygame.KEYDOWN :
-            check_keydown_events(settings, screen, event, player, curr_round)
+            check_keydown_events(settings, screen, event, player, curr_round, message)
 
 def update_screen(settings, screen, table, active_players, pile, trick_card, message) :
     """Updates the images on the screen"""
@@ -163,7 +163,7 @@ def add_to_discard_pile(settings, screen, pile, card):
     card.update_card_position(x_pos, y_pos)
     pile.discards.add(card)
 
-def check_keydown_events(settings, screen, event, player, curr_round):
+def check_keydown_events(settings, screen, event, player, curr_round, message):
     """Checks for key presses for bidding round"""
 
     bid = event.key - 48 #48 is key for 0
@@ -171,6 +171,9 @@ def check_keydown_events(settings, screen, event, player, curr_round):
     if (bid >= 0) and (bid <= curr_round):
         player.bid = bid
         player.turn_active = False
+    else:
+        message.update_message("Incorrect bid! Your bid must be between 0 and " + str(curr_round) + ".", .5)
+
 
 def validate_first_play(player, card, trick_card):
     """

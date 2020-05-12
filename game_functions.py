@@ -44,10 +44,11 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
     #main loop to continue through until all bids have been validated
     for player in active_players:
         player.turn_active = True
+        message.update_message(player.name + ", it's your bid!", .15) #150 millisecond delay
 
         while player.turn_active:
             sf.update_screen(settings, screen, table, active_players, pile, trick_card, message)
-            sf.check_bids(settings, screen, table, player, pile, curr_round)
+            sf.check_bids(settings, screen, table, player, pile, curr_round, message)
 
 
 def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message):
@@ -62,6 +63,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
         #Prompts player to play after showing hand
         for player in active_players:
             player.turn_active = True
+            message.update_message(player.name + ", it's your turn!", 0)
 
             #For each turn checks to see if a player has only tricks, if so, they can lead with a trick
             check_for_only_tricks(player, trick_card.suit)
