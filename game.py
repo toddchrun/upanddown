@@ -71,6 +71,7 @@ def run_game() :
 
         #cycles through round array to get number of cards to deal
         curr_round = settings.round_array[idx]
+        message.update_title("Round " + str(idx+1))
 
         #Beginning each round with a fresh deck
         shuffled_deck = deck.shuffle(settings, screen)
@@ -82,7 +83,6 @@ def run_game() :
         gf.deal_round(settings, screen, table, active_players, pile, message, deck, shuffled_deck, curr_round)
         trick_card = gf.get_trick(shuffled_deck)
         trick_card.update_card_position(settings.trick_x, settings.trick_y)
-        # trick_card.flip_card()
 
         #sorts the fresh hand for everyone and updates screen positions
         sf.sort_cards(active_players, trick_card)
@@ -94,6 +94,12 @@ def run_game() :
         #Play round
         gf.play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck)
 
+    #End of game, display the winner
+    final_score = score.get_score(active_players)
+    message.update_message(final_score[0][0] + " wins the game!", 0)
+    while True:
+        sf.clear_screen(settings, screen, table, active_players, message)
+        sf.check_for_exit()
 
 ################Gameplay####################
 

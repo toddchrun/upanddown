@@ -24,5 +24,4 @@ class Scoreboard():
         for player in active_players:
             self.sorted_scores.append([player.name, player.score])
 
-        print("Current Score: ")
-        print(Sort(self.sorted_scores))
+        return Sort(self.sorted_scores)

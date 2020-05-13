@@ -90,7 +90,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
         count += 1
 
         #Passes the whole turn into trick determining function
-        trick_winner(pile, active_players, trick_card)
+        trick_winner(pile, active_players, trick_card, message)
 
         #Clears out the discard pile
         clear_discards(pile)
@@ -100,7 +100,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
     trick_card.trick_broken = False
     set_dealer(active_players)
 
-def trick_winner(pile, active_players, trick_card):
+def trick_winner(pile, active_players, trick_card, message):
     """Determines trick winner by passing all played hands and trick suit"""
 
     #Need a false bool for each hand, even if trick broken, one may have not been played

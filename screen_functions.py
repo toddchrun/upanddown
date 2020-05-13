@@ -9,6 +9,13 @@ from discard_pile import Pile
 from pygame.sprite import Group
 
 #Make this a general check events?  Need a separate one to test each player's turn
+def check_for_exit():
+    """Loops until deck is clicked and cards can be dealt"""
+
+    for event in pygame.event.get() :
+        if event.type == pygame.QUIT :
+            sys.exit()
+
 def check_for_deal(settings, screen, deck):
     """Loops until deck is clicked and cards can be dealt"""
 
@@ -60,6 +67,22 @@ def update_screen(settings, screen, table, active_players, pile, trick_card, mes
 
     #Display discard pile
     pile.discards.draw(screen)
+
+    pygame.display.flip()
+
+def clear_screen(settings, screen, table, active_players, message) :
+    """Updates the images on the screen"""
+
+    #Basic display drawing/fill
+    screen.fill(settings.bg_color)
+    table.blitme()
+
+    #Display all hands
+    for player in active_players:
+        player.show_player(player.score, player.bid, player.curr_round_tricks, player.turn_active)
+
+    #Display current action
+    message.show_message()
 
     pygame.display.flip()
 

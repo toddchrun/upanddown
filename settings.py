@@ -23,7 +23,7 @@ class Settings() :
 
         #Basic settings
         self.game = "Multiplayer"
-        self.number_of_players = 4
+        self.number_of_players = 5
         self.starting_round = 1
         self.max_rounds_available = math.trunc(53 / self.number_of_players)
         self.trick_x = self.screen_width * .35 #trick set
