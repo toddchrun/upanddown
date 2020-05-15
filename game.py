@@ -42,8 +42,9 @@ def run_game() :
         active_players.append(Player(settings, screen, player_id, new_player_name))
         i += 1
 
-    #Set dealer
+    #Set dealer and user player as the first player
     active_players[0].dealer = True
+    active_players[0].user_control = True
 
     #Set player position on screen
     sf.set_player_position(settings, screen, active_players)

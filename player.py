@@ -15,8 +15,10 @@ class Player():
 
         #Player settings
         self.id = player_id
+        self.user_control = False
         self.name = player_name
         self.hand = Group()
+        self.valid_cards = Group()
         self.dealer = False
         self.turn_active = False
         self.has_only_tricks = False

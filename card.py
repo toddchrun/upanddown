@@ -24,16 +24,14 @@ class Card(Sprite):
         self.value = value
         self.display = display
         self.sort_index = sort_index
-        self.face_up = True
+        self.face_up = False
         self.selected = False
         self.trick_broken = False
         self.played_id = int()  #tracks the person that played the card
 
-        #Set card image
-        self.image = pygame.image.load('images/' + self.display + '.png')
+        #Set card face down image
+        self.image = pygame.image.load('images/card.png')
         self.rect = self.image.get_rect()
-
-        #Scales the original card to half its size
         self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
         self.rect = self.image.get_rect()
 
@@ -41,6 +39,7 @@ class Card(Sprite):
         """Draw card at current location"""
 
         self.screen.blit(self.image, self.rect)
+
 
     def update_card_position(self, pos_x, pos_y):
         """Sets specfic location of each card based on screen object"""
@@ -55,10 +54,10 @@ class Card(Sprite):
 
         if self.face_up:
             self.image = pygame.image.load('images/' + self.display + '.png')
-            self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
+            self.image = pygame.transform.scale(self.image, (int(self.rect.width), int(self.rect.height)))
         else:
             self.image = pygame.image.load('images/card.png')
-            self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
+            self.image = pygame.transform.scale(self.image, (int(self.rect.width), int(self.rect.height)))
 
     def select_card(self):
         """Switches card as candidate for selection, needs double click feature"""

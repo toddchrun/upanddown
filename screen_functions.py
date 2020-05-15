@@ -4,17 +4,29 @@ Screen functions for Up and Down the River
 
 import sys
 import pygame
+import time
 from table import Table
 from discard_pile import Pile
 from pygame.sprite import Group
 
 #Make this a general check events?  Need a separate one to test each player's turn
+
 def check_for_exit():
     """Loops until deck is clicked and cards can be dealt"""
 
     for event in pygame.event.get() :
         if event.type == pygame.QUIT :
             sys.exit()
+
+def player_pause(settings, screen, player):
+    """Loops until deck is clicked and cards can be dealt"""
+
+    for event in pygame.event.get() :
+        if event.type == pygame.QUIT :
+            sys.exit()
+
+    pygame.time.delay(1500) #current pause set at 1.5 seconds, pause between computer plays
+    player.turn_active = False
 
 def check_for_deal(settings, screen, deck):
     """Loops until deck is clicked and cards can be dealt"""
@@ -140,6 +152,14 @@ def set_card_pos(settings, screen, active_players):
             card.update_card_position(x_pos, y_pos)
             x_pos += x_incr
 
+def show_user_cards(active_players):
+    """Passes all players, shows cards for any player controlled by user"""
+
+    for player in active_players:
+        if player.user_control:
+            for card in player.hand:
+                card.flip_card()
+
 def display_cards(screen, player):
     """Centers the player's hand based on total number of cards and card image dimensions"""
 
@@ -199,6 +219,10 @@ def check_deck_click(deck, mouse_x, mouse_y):
 
 def add_to_discard_pile(settings, screen, pile, card):
     """Adds played card to discard pile"""
+
+    #if face down, flip the card
+    if not card.face_up:
+        card.flip_card()
 
     x_pos = pile.x + (len(pile.discards) * settings.screen_width * .014)
     y_pos = pile.y

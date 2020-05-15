@@ -4,11 +4,13 @@ Game functions for Up and Down the River
 
 import sys
 import pygame
+import time
 from pygame.sprite import Group
 from random import randint
 from card import Card
 from player import Player
 import screen_functions as sf
+import computer_functions as cf
 
 
 def deal_round(settings, screen, table, active_players, pile, message, deck, curr_deck, curr_round):
@@ -45,27 +47,43 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
     Cycles through each player to determine number of cards they wish to bid for
     the current round.
     """
+
+    #check to see if any player has the joker, if so, set suit to be trick_suit
+    check_joker(active_players, trick_card.suit)
+
+    #Show user controlled player's hand
+    sf.show_user_cards(active_players)
+
+    #Show the trick card
+    trick_card.flip_card()
+
     #Sets order of bidding, dealer is last
     active_players.append(active_players.pop(0))
 
     #main loop to continue through until all bids have been validated
     for player in active_players:
+
+        #sets each player's turn status to active
         player.turn_active = True
-        message.update_message(player.name + ", it's your bid!", .15) #150 millisecond delay
+        message.update_message(player.name + ", it's your bid!", 0)
 
-        while player.turn_active:
-            sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
-            sf.check_bids(settings, screen, table, player, pile, curr_round, message)
-
+        if not player.user_control:
+            while player.turn_active:
+                #for any computer controlled player, gets their bid, pauses 1.5 seconds for turn
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                cf.bid(player, trick_card)
+                sf.player_pause(settings, screen, player)
+        else:
+            while player.turn_active:
+                #prompt for user controlled player to bid
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                sf.check_bids(settings, screen, table, player, pile, curr_round, message)
 
 def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck):
     """Plays the round based on current number of cards and trick."""
 
     count = 0
     while count < curr_round:
-
-        #check to see if any player has the joker, if so, set suit to be trick_suit
-        check_joker(active_players, trick_card.suit)
 
         #Prompts player to play after showing hand
         for player in active_players:
@@ -75,9 +93,17 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
             #For each turn checks to see if a player has only tricks, if so, they can lead with a trick
             check_for_only_tricks(player, trick_card.suit)
 
-            while player.turn_active:
-                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
-                sf.check_play(settings, screen, table, player, pile, trick_card, curr_round, message)
+            if not player.user_control:
+                while player.turn_active:
+                    #Loop for computer controlled players
+                    sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                    cf.play(settings, screen, player, trick_card, pile, curr_round)
+                    sf.player_pause(settings, screen, player)
+            else:
+                while player.turn_active:
+                    #prompt for user controlled play
+                    sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                    sf.check_play(settings, screen, table, player, pile, trick_card, curr_round, message)
 
             #Resets any card that may have been selected
             for card in player.hand:
@@ -90,7 +116,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
         count += 1
 
         #Passes the whole turn into trick determining function
-        trick_winner(pile, active_players, trick_card, message)
+        trick_winner(settings, screen, table, active_players, pile, trick_card, message, deck)
 
         #Clears out the discard pile
         clear_discards(pile)
@@ -100,7 +126,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
     trick_card.trick_broken = False
     set_dealer(active_players)
 
-def trick_winner(pile, active_players, trick_card, message):
+def trick_winner(settings, screen, table, active_players, pile, trick_card, message, deck):
     """Determines trick winner by passing all played hands and trick suit"""
 
     #Need a false bool for each hand, even if trick broken, one may have not been played
@@ -130,7 +156,15 @@ def trick_winner(pile, active_players, trick_card, message):
     #Increments number of tricks won for round winner
     for player in active_players:
         if player.id == winning_card.played_id:
+            player.turn_active = True
             player.curr_round_tricks += 1
+            message.update_message(player.name + " wins the hand!", 0)
+
+            #Pauses the screen to show hand winner and scores
+            while player.turn_active:
+                sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
+                sf.player_pause(settings, screen, player)
+
 
     #Need to re-sort list based on winner
     while active_players[0].id != winning_card.played_id:

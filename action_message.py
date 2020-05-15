@@ -57,7 +57,7 @@ class Message():
         time.sleep(pause)
 
     def update_title(self, title):
-        """Updated message with new text and pause if needed"""
+        """Updated title with new text"""
 
         self.title = title
 
@@ -66,9 +66,7 @@ class Message():
         self.show_message()
 
     def show_message(self):
-        """Called within screen functions update screen, will always refresh to show
-        current message
-        """
+        """Shows the current message and title"""
 
         #re-centers the message each time
         self.message_rect = self.message_image.get_rect()
