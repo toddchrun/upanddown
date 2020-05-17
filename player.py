@@ -13,19 +13,6 @@ class Player():
     def __init__(self, settings, screen, player_id, player_name):
         super(Player, self).__init__()
 
-        #Player settings
-        self.id = player_id
-        self.user_control = False
-        self.name = player_name
-        self.hand = Group()
-        self.valid_cards = Group()
-        self.dealer = False
-        self.turn_active = False
-        self.has_only_tricks = False
-        self.score = 0
-        self.bid = 0
-        self.curr_round_tricks = 0
-
         #Visual settings
         self.x_start = 0.0
         self.y_start = 0.0
@@ -38,6 +25,19 @@ class Player():
         # Font settings - white for now and just default
         self.text_color = (255, 255, 255)
         self.font = pygame.font.SysFont(None, 16)
+
+        #Player settings
+        self.id = player_id
+        self.user_control = False
+        self.name = player_name
+        self.difficulty = self.settings.game_difficulty_option[1]
+        self.hand = Group()
+        self.dealer = False
+        self.turn_active = False
+        self.has_only_tricks = False
+        self.score = 0
+        self.bid = 0
+        self.curr_round_tricks = 0
 
     def set_top_text(self, score, turn_active):
         """Sets text to be displayed at top"""

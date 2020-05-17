@@ -23,14 +23,14 @@ class Settings() :
 
         #Basic settings
         self.game = "Multiplayer"
-        self.number_of_players = 5
+        self.number_of_players = 4
         self.starting_round = 1
         self.max_rounds_available = math.trunc(53 / self.number_of_players)
         self.trick_x = self.screen_width * .35 #trick set
         self.trick_y = (self.screen_height / 2) - (.071875 * self.screen_height) #Set for card to be centered
 
         #Make sure max rounds will have enough cards!
-        self.max_rounds = 3
+        self.max_rounds = 7
         try:
             self.max_rounds < self.max_rounds_available
         except:
