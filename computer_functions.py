@@ -131,12 +131,14 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                     for card in reversed(player.hand.sprites()): #reverse sort to find the highest value (making sure a trick)
                         if card.value == value:
                             play_card(settings, screen, player, pile, card)
+                            break
                 else:
                     #if has a trick, needs a trick, but not valid, play lowest card
                     value = determine_lowest_value(player)
                     for card in player.hand:
                         if card.value == value:
                             play_card(settings, screen, player, pile, card)
+                            break
 
             else:
                 #needs a trick but doesn't have one so play highest possible card
@@ -144,6 +146,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                 for card in player.hand:
                     if card.value == value:
                         play_card(settings, screen, player, pile, card)
+                        break
 
         else:
             #first play and doesn't need trick so play lowest card
@@ -151,6 +154,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
             for card in player.hand:
                 if card.value == value:
                     play_card(settings, screen, player, pile, card)
+                    break
 
     else:
         #covers all the scenarios where it isn't the first play
@@ -167,6 +171,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                     for card in reversed(player.hand.sprites()): #reversed order to make sure it's a trick
                         if card.value == value:
                             play_card(settings, screen, player, pile, card)
+                            break
 
                 else:
                     #needs a trick and has one, but not valid, so play lowest
@@ -174,6 +179,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                     for card in player.hand:
                         if card.value == value:
                             play_card(settings, screen, player, pile, card)
+                            break
 
             else:
                 #needs a trick but doesn't have one, play highest hoping to take
@@ -181,6 +187,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                 for card in player.hand:
                     if card.value == value:
                         play_card(settings, screen, player, pile, card)
+                        break
 
         else:
             #doesn't have a trick and doesn't need one, play lowest card
@@ -188,6 +195,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
             for card in player.hand:
                 if card.value == value:
                     play_card(settings, screen, player, pile, card)
+                    break
 
 ####################PLAY DETERMINATION TREE#####################################
 

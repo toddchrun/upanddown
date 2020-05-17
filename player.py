@@ -42,13 +42,20 @@ class Player():
     def set_top_text(self, score, turn_active):
         """Sets text to be displayed at top"""
 
-        #highlights player if it is their active turn
+        #highlights player if it is their active turn or they are the dealer
         if turn_active:
             self.bg_color = (0, 0, 150)
+        elif self.dealer:
+            self.bg_color = (150, 0, 0)
         else:
             self.bg_color = self.settings.bg_color
 
-        top_str = self.name + " - Score: " + str(score)
+        if self.dealer:
+            dealer_str = "DEALER - "
+        else:
+            dealer_str = ""
+
+        top_str = dealer_str + self.name + " - Score: " + str(score)
         self.top_image = self.font.render(top_str, True, self.text_color,
             self.bg_color)
 
