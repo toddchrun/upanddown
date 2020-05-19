@@ -14,6 +14,7 @@ from discard_pile import Pile
 from scoreboard import Scoreboard
 from settings import Settings
 from action_message import Message
+from prompt_screen import PromptScreen
 import game_functions as gf
 import screen_functions as sf
 
@@ -27,6 +28,7 @@ def run_game() :
 
     screen = pygame.display.set_mode((settings.screen_width, settings.screen_height))
     pygame.display.set_caption("Up and Down the River")
+
 
 ################Screen Setting################
 
@@ -45,6 +47,8 @@ def run_game() :
     #Set dealer and user player as the first player
     active_players[0].dealer = True
     active_players[0].user_control = True
+
+    prompt_screen = PromptScreen(settings, screen)
 
     #Set player position on screen
     sf.set_player_position(settings, screen, active_players)
@@ -65,6 +69,9 @@ def run_game() :
 
 ################Testing################
 
+    while True:
+        sf.prompt_screen(settings, screen, prompt_screen)
+        sf.check_for_prompts(settings, screen, prompt_screen)
 
 ################Gameplay####################
 

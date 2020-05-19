@@ -18,6 +18,16 @@ def check_for_exit():
         if event.type == pygame.QUIT :
             sys.exit()
 
+def check_for_prompts(settings, screen, prompt_screen):
+    """Loops until deck is clicked and cards can be dealt"""
+
+    events = pygame.event.get()
+    for event in events :
+        if event.type == pygame.QUIT :
+            sys.exit()
+
+    prompt_screen.update_text(events)
+
 def player_pause(settings, screen, player):
     """Loops until deck is clicked and cards can be dealt"""
 
@@ -81,6 +91,15 @@ def update_screen(settings, screen, table, active_players, pile, trick_card, mes
     pile.discards.draw(screen)
 
     pygame.display.flip()
+
+def prompt_screen(settings, screen, prompt_screen) :
+    """Updates the prompt images on the screen"""
+
+    #Basic display drawing/fill
+    screen.fill(settings.bg_color)
+    prompt_screen.show_prompt_screen()
+
+    pygame.display.update()
 
 def clear_screen(settings, screen, table, active_players, message) :
     """Updates the images on the screen"""
