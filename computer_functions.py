@@ -56,9 +56,9 @@ def play(settings, screen, player, trick_card, pile, curr_round):
                 if card.suit == round_hand[0].suit:
                     card.valid = True
 
-    if player.difficulty == 'Easy':
+    if player.difficulty == settings.game_difficulty_option[0]:
         determine_play_easy(settings, screen, pile, player, trick_card)
-    elif player.difficulty == 'Intermediate':
+    elif player.difficulty == settings.game_difficulty_option[1]:
         determine_play_intermediate(settings, screen, pile, player, trick_card)
 
 

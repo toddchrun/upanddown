@@ -10,7 +10,7 @@ class Player():
     Class for every player
     """
 
-    def __init__(self, settings, screen, player_id, player_name):
+    def __init__(self, settings, screen, player_id, player_name, difficulty):
         super(Player, self).__init__()
 
         #Visual settings
@@ -30,7 +30,7 @@ class Player():
         self.id = player_id
         self.user_control = False
         self.name = player_name
-        self.difficulty = self.settings.game_difficulty_option[1]
+        self.difficulty = difficulty
         self.hand = Group()
         self.dealer = False
         self.turn_active = False

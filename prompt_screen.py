@@ -6,6 +6,7 @@ from pygame.sprite import Sprite
 from pygame.sprite import Group
 from pygame_textinput import TextInput
 from prompt_screen_button import PromptScreenButton
+from play_button import Button
 
 class PromptScreen():
 
@@ -103,7 +104,7 @@ class PromptScreen():
             button = PromptScreenButton(self.settings, self.screen, msg, False, pos_x, pos_y)
             self.players.add(button)
 
-        self.players.sprites()[0].update() #sets first option as highlight
+        self.players.sprites()[0].select() #sets first option as highlight
 
         #Sprite Group of difficulties
         for index in range(0 , len(self.settings.game_difficulty_option)):
@@ -113,17 +114,20 @@ class PromptScreen():
             button = PromptScreenButton(self.settings, self.screen, msg, False, pos_x, pos_y)
             self.levels.add(button)
 
-        self.levels.sprites()[0].update() #sets first option as highlight
+        self.levels.sprites()[0].select() #sets first option as highlight
 
         #Sprite Group of rounds
-        for index in range(1 , self.settings.max_rounds_available):
+        for index in range(1 , self.settings.max_rounds_available+1):
             msg = str(index)
             pos_x = self.settings.screen_width * (.50 + ((index-1) * .05))
             pos_y = self.number_of_rounds_rect.y
             button = PromptScreenButton(self.settings, self.screen, msg, False, pos_x, pos_y)
             self.rounds.add(button)
 
-        self.rounds.sprites()[0].update() #sets first option as highlight
+        self.rounds.sprites()[0].select() #sets first option as highlight
+
+        #Play Button instance to capture all the prompts when selected
+        self.play_button = Button(self.settings, self.screen)
 
 
     def show_prompt_screen(self):
@@ -143,6 +147,9 @@ class PromptScreen():
         self.levels.draw(self.screen)
         self.players.draw(self.screen)
         self.rounds.draw(self.screen)
+
+        #display the play button
+        self.play_button.draw_button()
 
     def update_text(self, events):
         """Updates the text input box with events"""

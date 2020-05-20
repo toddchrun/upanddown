@@ -22,33 +22,19 @@ import screen_functions as sf
 def run_game() :
     """Initializes the game and creates a screen object"""
 
-################Screen Setting################
+################Initial Sets and Prompt Screen ################
     pygame.init()
     settings = Settings()
 
     screen = pygame.display.set_mode((settings.screen_width, settings.screen_height))
     pygame.display.set_caption("Up and Down the River")
 
-
-################Screen Setting################
-
-
-################Initial Sets################
-
-    #Add active players to array NEED MAJOR UPDATES HERE
-    active_players = []
-    i = 0
-    while i < settings.number_of_players:
-        new_player_name = "Player " + str(i+1)
-        player_id = i
-        active_players.append(Player(settings, screen, player_id, new_player_name))
-        i += 1
-
-    #Set dealer and user player as the first player
-    active_players[0].dealer = True
-    active_players[0].user_control = True
-
     prompt_screen = PromptScreen(settings, screen)
+    active_players = []
+
+    while not prompt_screen.play_button.game_active:
+        sf.prompt_screen(settings, screen, prompt_screen)
+        sf.check_for_prompts(settings, screen, prompt_screen, active_players)
 
     #Set player position on screen
     sf.set_player_position(settings, screen, active_players)
@@ -65,21 +51,22 @@ def run_game() :
     #active message instance
     message = Message(settings, screen)
 
-################Initial Sets################
+    #set the round array
+    settings.set_round_array()
+
+################Initial Sets and Prompt Screen ################
 
 ################Testing################
-
-    while True:
-        sf.prompt_screen(settings, screen, prompt_screen)
-        sf.check_for_prompts(settings, screen, prompt_screen)
+################Testing################
 
 ################Gameplay####################
+    print(settings.round_array)
+    for round in settings.round_array:
 
-    for idx in range(0, len(settings.round_array)):
+        curr_round = round
 
         #cycles through round array to get number of cards to deal
-        curr_round = settings.round_array[idx]
-        message.update_title("Round " + str(idx+1))
+        message.update_title("Round " + str(curr_round))
 
         #Beginning each round with a fresh deck
         shuffled_deck = deck.shuffle(settings, screen)

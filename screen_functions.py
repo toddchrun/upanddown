@@ -5,6 +5,7 @@ Screen functions for Up and Down the River
 import sys
 import pygame
 import time
+from player import Player
 from table import Table
 from discard_pile import Pile
 from pygame.sprite import Group
@@ -18,14 +19,19 @@ def check_for_exit():
         if event.type == pygame.QUIT :
             sys.exit()
 
-def check_for_prompts(settings, screen, prompt_screen):
+def check_for_prompts(settings, screen, prompt_screen, active_players):
     """Loops until deck is clicked and cards can be dealt"""
 
     events = pygame.event.get()
     for event in events :
         if event.type == pygame.QUIT :
             sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN :
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_prompts_clicked(settings, screen, prompt_screen, mouse_x, mouse_y) #check for prompt button clicks
+            check_play_button(settings, screen, prompt_screen, active_players, mouse_x, mouse_y) #check to see if play button clicked)
 
+    #feeds text input box events for constant refresh
     prompt_screen.update_text(events)
 
 def player_pause(settings, screen, player):
@@ -228,6 +234,76 @@ def check_card_clicked(settings, screen, player, pile, trick_card, message, mous
         elif card.rect.collidepoint(mouse_x, mouse_y):
             card.select_card()
             break
+
+def check_prompts_clicked(settings, screen, prompt_screen, mouse_x, mouse_y):
+    """Checks collidepoint of all the prompt buttons, updates if needed"""
+
+    #check the level prompts
+    for level in prompt_screen.levels:
+        if level.rect.collidepoint(mouse_x, mouse_y):
+            level.select()
+            for other in prompt_screen.levels: #deslect all others
+                if (other != level):
+                    other.deselect()
+
+    #check the player number prompts
+    for number in prompt_screen.players:
+        if number.rect.collidepoint(mouse_x, mouse_y):
+            number.select()
+            for other in prompt_screen.players: #deslect all others
+                if (other != number):
+                    other.deselect()
+            #hides number of round options if there aren't enough cards!
+            for round in prompt_screen.rounds:
+                if (int(round.msg) * int(number.msg) > 53):
+                    round.hide()
+
+    #check the rounds prompts
+    for round in prompt_screen.rounds:
+        if round.rect.collidepoint(mouse_x, mouse_y):
+            round.select()
+            for other in prompt_screen.rounds: #deslect all others
+                if (other != round):
+                    other.deselect()
+
+def check_play_button(settings, screen, prompt_screen, active_players, mouse_x, mouse_y):
+    """Checks collidepoint of all the prompt buttons, updates if needed"""
+
+    if prompt_screen.play_button.rect.collidepoint(mouse_x, mouse_y): #play time!
+
+        #set game difficulty
+        for level in prompt_screen.levels:
+            if level.active:
+                settings.game_difficulty = level.msg
+
+        #set number of players
+        for number in prompt_screen.players:
+            if number.active:
+                settings.number_of_players = int(number.msg)
+
+        #set number of rounds
+        for round in prompt_screen.rounds:
+            if round.active:
+                settings.max_rounds = int(round.msg)
+
+        #set player name
+        user_name = prompt_screen.text_input.get_text()
+        active_players.append(Player(settings, screen, 0, user_name, None)) #sets first player instance as the user
+
+        #set computer players (should clean this up)
+        i = 1
+        while i < settings.number_of_players:
+            new_player_name = "Player " + str(i+1)
+            player_id = i
+            active_players.append(Player(settings, screen, player_id, new_player_name, settings.game_difficulty))
+            i += 1
+
+        #Set dealer and user player as the first player
+        active_players[0].dealer = True
+        active_players[0].user_control = True
+
+        #finally, set game active to true
+        prompt_screen.play_button.game_active = True
 
 def check_deck_click(deck, mouse_x, mouse_y):
     """If deck image clicked, deal the round"""

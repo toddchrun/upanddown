@@ -13,7 +13,7 @@ class PromptScreenButton(Sprite):
 
         #sets initial parameters
         self.msg = msg
-        self.active = active
+        self.active = active #used to pass selected
 
         #basic visual settings
         self.settings = settings
@@ -33,14 +33,27 @@ class PromptScreenButton(Sprite):
         self.rect.x = pos_x
         self.rect.y = pos_y
 
-    def update(self):
+    def select(self):
         """Updates whether button is active to change text color"""
 
-        self.active = not self.active
+        self.active = True
 
-        if self.active:
-            self.text_color = (150, 0, 0)
-        else:
-            self.text_color = (255, 255, 255)
+        self.text_color = (150, 0, 0)
+
+        self.image = self.font.render(self.msg, True, self.text_color)
+
+    def deselect(self):
+        """Updates whether button is active to change text color"""
+
+        self.active = False
+
+        self.text_color = (255, 255, 255)
+
+        self.image = self.font.render(self.msg, True, self.text_color)
+
+    def hide(self):
+        """Hides the prompt button, for when max rounds cannot be 7, 8 or 9"""
+
+        self.text_color = self.settings.bg_color
 
         self.image = self.font.render(self.msg, True, self.text_color)

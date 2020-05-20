@@ -2,7 +2,6 @@
 # Settings for Up and Down the River (a card game)
 #
 ###############################################################################
-import math
 
 class Settings() :
     """Class to store all the settings for Up and Down the River Game"""
@@ -15,27 +14,22 @@ class Settings() :
         self.screen_height = 800
         self.bg_color = (34, 139, 34)
 
-        #Basic options
-        # self.game_option = ["Single Player", "Multiplayer"]
-        self.number_of_players_option = [3, 4, 5, 6, 7, 8]
-        self.game_difficulty_option = ["Easy", "Intermediate", "Hard"]
-        # self.exact_mode_option = True
-
         #Basic settings
-        self.game = "Multiplayer"
-        self.number_of_players = 6
+        self.number_of_players_option = [3, 4, 5, 6, 7, 8]
+        self.number_of_players = int()
+
+        self.game_difficulty_option = ["Easy", "Intermediate", "Hard"]
+        self.game_difficulty = str()
+
         self.starting_round = 1
-        self.max_rounds_available = max(math.trunc(53 / self.number_of_players), 9)
+        self.max_rounds_available = 9
+        self.max_rounds = int()
+
+        #trick card screen settings
         self.trick_x = self.screen_width * .35 #trick set
         self.trick_y = (self.screen_height / 2) - (.071875 * self.screen_height) #Set for card to be centered
 
-        #Make sure max rounds will have enough cards!
-        self.max_rounds = 3
-        try:
-            self.max_rounds < self.max_rounds_available
-        except:
-            self.max_rounds = self.max_rounds_available
-
+    def set_round_array(self):
         #Sets an array for number of cards to be dealt in a given round
         self.round_array = []
         for round in range(self.starting_round, self.max_rounds+1):
