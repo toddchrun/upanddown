@@ -60,13 +60,13 @@ def run_game() :
 ################Testing################
 
 ################Gameplay####################
-    print(settings.round_array)
+    counter = 0
     for round in settings.round_array:
-
+        counter += 1
         curr_round = round
 
         #cycles through round array to get number of cards to deal
-        message.update_title("Round " + str(curr_round))
+        message.update_title("Round " + str(counter))
 
         #Beginning each round with a fresh deck
         shuffled_deck = deck.shuffle(settings, screen)

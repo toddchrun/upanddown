@@ -5,6 +5,7 @@ Screen functions for Up and Down the River
 import sys
 import pygame
 import time
+import math
 from player import Player
 from table import Table
 from discard_pile import Pile
@@ -256,7 +257,13 @@ def check_prompts_clicked(settings, screen, prompt_screen, mouse_x, mouse_y):
             #hides number of round options if there aren't enough cards!
             for round in prompt_screen.rounds:
                 if (int(round.msg) * int(number.msg) > 53):
+                    if round.active:
+                        #if the round you are hiding was active, reset to the first option to be active
+                        round.active = False
+                        number_of_rounds_auto_update(prompt_screen, int(number.msg))
                     round.hide()
+                elif round.hidden:
+                    round.unhide()
 
     #check the rounds prompts
     for round in prompt_screen.rounds:
@@ -265,6 +272,14 @@ def check_prompts_clicked(settings, screen, prompt_screen, mouse_x, mouse_y):
             for other in prompt_screen.rounds: #deslect all others
                 if (other != round):
                     other.deselect()
+
+def number_of_rounds_auto_update(prompt_screen, num_players):
+    """Called upon when previous active selection is hidden, targets highest next available selection"""
+
+    target_level = math.trunc(53 / num_players)
+    for round in prompt_screen.rounds:
+        if int(round.msg) == target_level:
+            round.select()
 
 def check_play_button(settings, screen, prompt_screen, active_players, mouse_x, mouse_y):
     """Checks collidepoint of all the prompt buttons, updates if needed"""
