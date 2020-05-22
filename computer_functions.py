@@ -256,11 +256,16 @@ def can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_ca
 
 def determine_lowest_value(player, trick_card):
     """Determines lowest value in the player's valid hand"""
-
+    has_only_tricks = True
     low_value = 15 #highest possible value
 
-    if player.has_only_tricks:
-        #if they have only tricks, just return lowest value like normal
+    for card in player.hand:
+        if card.valid and card.suit != trick_card.suit:
+            has_only_tricks = False
+            break
+
+    if has_only_tricks:
+        #if they have only tricks, forced to play lowest value 
         for card in player.hand:
             if (card.value < low_value) and (card.valid):
                 low_value = card.value
