@@ -5,14 +5,23 @@ For now, this will be an 'easy' or 'intermediate' setting
 
 import sys
 import pygame
+import math
 from table import Table
 from random import randint
 from discard_pile import Pile
 from pygame.sprite import Group
 import screen_functions as sf
 
-def bid(player, trick_card):
+def bid(settings, player, trick_card, active_players, curr_round):
     """Sets computer controlled bid based on current hand"""
+
+    if player.difficulty == settings.game_difficulty_option[0]:
+        determine_bid_easy(player, trick_card)
+    elif player.difficulty == settings.game_difficulty_option[1]:
+        determine_bid_intermediate(player, trick_card, active_players, curr_round)
+
+def determine_bid_easy(player, trick_card):
+    """For easy mode, increments bid if player has an ace or trick"""
 
     bid = 0
 
@@ -22,6 +31,55 @@ def bid(player, trick_card):
             bid += 1
 
     player.bid = bid
+
+def determine_bid_intermediate(player, trick_card, active_players, curr_round):
+    """For intermediate mode"""
+
+    player_bid = 0
+    curr_bids = 0
+    total_cards_left = 0
+    open_bid = True #if there is still a trick to take, sets to true
+
+    #set total cards to play
+    curr_index = active_players.index(player) #gets current position within round
+    print(curr_index)
+    tot_players = len(active_players)
+    remaining_players = len(active_players[curr_index:]) #number of remaining players
+    print(remaining_players)
+    total_cards_left = curr_round * remaining_players #total cards left in play
+    print(total_cards_left)
+
+    #loops through hand, increments bid based on card value and if there are open bids
+    for card in player.hand:
+        curr_bids = get_curr_bids(active_players)
+        open_bid = get_open_bid(curr_bids, curr_round)
+
+        if open_bid:
+            if (card.suit == trick_card.suit): #bid one if you have a trick
+                player_bid += 1
+
+        else:
+            if (card.suit == trick_card.suit) and (card.value >= (max(0, math.trunc(tot_players - curr_round) / tot_players) * 15)):
+                print("Hey working!" + str(max(0, math.trunc(tot_players - curr_round) / tot_players) * 15))
+                player_bid += 1
+
+    player.bid = player_bid
+
+def get_curr_bids(active_players):
+    """Returns count of total bids at the moment"""
+    curr_bids = 0
+    for player in active_players:
+        curr_bids += player.bid
+
+    return curr_bids
+
+def get_open_bid(curr_bids, curr_round):
+    """Returns true if there is an open trick card to take"""
+
+    if curr_bids >= curr_round:
+        return False
+    else:
+        return True
 
 def play(settings, screen, player, trick_card, pile, curr_round):
     """Sets computer play based on what has been played, etc."""
@@ -265,7 +323,7 @@ def determine_lowest_value(player, trick_card):
             break
 
     if has_only_tricks:
-        #if they have only tricks, forced to play lowest value 
+        #if they have only tricks, forced to play lowest value
         for card in player.hand:
             if (card.value < low_value) and (card.valid):
                 low_value = card.value

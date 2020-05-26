@@ -71,7 +71,7 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
             while player.turn_active:
                 #for any computer controlled player, gets their bid, pauses 1.5 seconds for turn
                 sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
-                cf.bid(player, trick_card)
+                cf.bid(settings, player, trick_card, active_players, curr_round)
                 sf.player_pause(settings, screen, player)
         else:
             while player.turn_active:
