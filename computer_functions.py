@@ -19,6 +19,8 @@ def bid(settings, player, trick_card, active_players, curr_round):
         determine_bid_easy(player, trick_card)
     elif player.difficulty == settings.game_difficulty_option[1]:
         determine_bid_intermediate(player, trick_card, active_players, curr_round)
+    elif player.difficulty == settings.game_difficulty_option[2]:
+        determine_bid_hard(player, trick_card, active_players, curr_round)
 
 def determine_bid_easy(player, trick_card):
     """For easy mode, increments bid if player has an ace or trick"""
@@ -62,31 +64,56 @@ def determine_bid_intermediate(player, trick_card, active_players, curr_round):
     player.bid = player_bid
 
 def determine_bid_hard(player, trick_card, active_players, curr_round):
-    """For intermediate mode"""
+    """For hard mode"""
 
+    #variables needed
     player_bid = 0
     curr_bids = 0
     total_cards_left = 0
+    player_tricks = 0
+    player_non_tricks = 0
+    tricks_remaining_avg = 0.0 #total number of expected remaining tricks based on where bidding is
+    trick_value_avg = 8.5 #average value of trick
     open_bid = True #if there is still a trick to take, sets to true
 
     #set total cards to play
     curr_index = active_players.index(player) #gets current position within round
     tot_players = len(active_players)
     remaining_players = len(active_players[curr_index:]) #number of remaining players
-    total_cards_left = curr_round * remaining_players #total cards left in play
+    total_cards_left = curr_round * remaining_players - 1 #total cards left in play NOT INCLUDING CURR PLAYER
+
+    #set player tricks and non tricks
+    for card in player.hand:
+        if card.suit == trick_card.suit:
+            player_tricks += 1
+        else:
+            player_non_tricks += 1
+
+    #set average number of tricks remaining
+    tricks_remaining_avg = (14 - player_tricks) / (53 - player_non_tricks) * total_cards_left
 
     #loops through hand, increments bid based on card value and if there are open bids
     for card in player.hand:
+        trick_target_value = 8.5 #shifted expected value based on number of tricks remaining
         curr_bids = get_curr_bids(active_players)
         open_bid = get_open_bid(curr_bids, curr_round)
 
         if open_bid:
-            if (card.suit == trick_card.suit): #bid one if you have a trick
+            trick_target_value += tricks_remaining_avg - (curr_round - curr_bids)
+            if (card.suit == trick_card.suit):
+                #increase/decrease how big the trick needed, but ace or higher is a bid no matter what
+                if (card.value >= min(math.trunc(trick_target_value), 14)):
+                    player_bid += 1
+            elif card.value > 14 - max(((curr_round - curr_bids) - tricks_remaining_avg), 0):
+                #if not a trick, if remaining average is less than open bids, bid if high
                 player_bid += 1
 
         else:
-            if (card.suit == trick_card.suit) and (card.value >= (max(0, math.trunc(tot_players - curr_round) / tot_players) * 15)):
-                player_bid += 1
+            trick_target_value += tricks_remaining_avg - ((curr_round - curr_bids) * 2)
+            if (card.suit == trick_card.suit):
+                #increase/decrease how big the trick needed, but ace or higher is a bid no matter what
+                if (card.value >= min(math.trunc(trick_target_value), 14)):
+                    player_bid += 1
 
     player.bid = player_bid
 
@@ -143,6 +170,8 @@ def play(settings, screen, player, trick_card, pile, curr_round):
         determine_play_easy(settings, screen, pile, player, trick_card)
     elif player.difficulty == settings.game_difficulty_option[1]:
         determine_play_intermediate(settings, screen, pile, player, trick_card)
+    elif player.difficulty == settings.game_difficulty_option[2]:
+        determine_play_hard(settings, screen, pile, player, trick_card)
 
 
 def determine_play_easy(settings, screen, pile, player, trick_card):
