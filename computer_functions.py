@@ -97,9 +97,16 @@ def determine_bid_hard(player, trick_card, active_players, curr_round):
         trick_target_value = 8.5 #shifted expected value based on number of tricks remaining
         curr_bids = get_curr_bids(active_players)
         open_bid = get_open_bid(curr_bids, curr_round)
+        trick_factor = tricks_remaining_avg - (curr_round - curr_bids)
 
         if open_bid:
-            trick_target_value += tricks_remaining_avg - (curr_round - curr_bids)
+            if trick_factor <= 1:
+                #less expected tricks than open bids, scale trick target value multiplicatively
+                trick_target_value *= trick_factor
+            else:
+                #more expected tricks than open bids, add to target value to be more conservative
+                trick_target_value += trick_factor
+
             if (card.suit == trick_card.suit):
                 #increase/decrease how big the trick needed, but ace or higher is a bid no matter what
                 if (card.value >= min(math.trunc(trick_target_value), 14)):
@@ -109,7 +116,7 @@ def determine_bid_hard(player, trick_card, active_players, curr_round):
                 player_bid += 1
 
         else:
-            trick_target_value += tricks_remaining_avg - ((curr_round - curr_bids) * 2)
+            trick_target_value += tricks_remaining_avg - ((curr_round - curr_bids) * 2) #only if over-bid
             if (card.suit == trick_card.suit):
                 #increase/decrease how big the trick needed, but ace or higher is a bid no matter what
                 if (card.value >= min(math.trunc(trick_target_value), 14)):
@@ -394,10 +401,6 @@ def determine_play_hard(settings, screen, pile, player, trick_card):
                                 play_card(settings, screen, player, pile, card)
                                 break
 
-                    for card in reversed(player.hand.sprites()): #reverse sort to find the highest value (making sure a trick)
-                        if card.value == value:
-                            play_card(settings, screen, player, pile, card)
-                            break
                 else:
                     #if has a trick, needs a trick, but not valid, play lowest card
                     value = determine_lowest_value(player, trick_card)
