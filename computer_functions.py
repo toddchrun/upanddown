@@ -140,7 +140,7 @@ def get_open_bid(curr_bids, curr_round):
     else:
         return True
 
-def play(settings, screen, player, trick_card, pile, curr_round):
+def play(settings, screen, player, trick_card, pile, curr_round, active_players):
     """Sets computer play based on what has been played, etc."""
 
     if len(pile.discards) == 0:
@@ -178,7 +178,7 @@ def play(settings, screen, player, trick_card, pile, curr_round):
     elif player.difficulty == settings.game_difficulty_option[1]:
         determine_play_intermediate(settings, screen, pile, player, trick_card)
     elif player.difficulty == settings.game_difficulty_option[2]:
-        determine_play_hard(settings, screen, pile, player, trick_card)
+        determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players)
 
 
 def determine_play_easy(settings, screen, pile, player, trick_card):
@@ -344,7 +344,7 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
 
     set_card_validity(player)
 
-def determine_play_hard(settings, screen, pile, player, trick_card):
+def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players):
     """Determines what card to play based on intermediate mode"""
 
     #determining boolean values
