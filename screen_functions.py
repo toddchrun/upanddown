@@ -182,9 +182,9 @@ def show_user_cards(active_players):
     """Passes all players, shows cards for any player controlled by user"""
 
     for player in active_players:
-        if player.user_control:
-            for card in player.hand:
-                card.flip_card()
+        # if player.user_control:
+        for card in player.hand:
+            card.flip_card()
 
 def display_cards(screen, player):
     """Centers the player's hand based on total number of cards and card image dimensions"""

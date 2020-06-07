@@ -26,6 +26,7 @@ class Card(Sprite):
         self.sort_index = sort_index
         self.face_up = False
         self.selected = False
+        self.play = False #set to true if the computer is to play card
         self.trick_broken = False
         self.valid = False #processed each turn, needs to be True to be able to play
         self.played_id = int()  #tracks the person that played the card

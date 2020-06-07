@@ -248,41 +248,20 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                     #if has a trick in valid hand and needs trick, only play if player has only tricks
 
                     if only_tricks_valid(player, trick_card):
-                        value = determine_highest_trickvalue(player, trick_card)
-                        for card in reversed(player.hand.sprites()): #reverse sort to find the highest value (making sure a trick)
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_trickvalue(player, trick_card)
                     else:
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
 
                 else:
                     #if has a trick, needs a trick, but not valid, play lowest card
-                    value = determine_lowest_value(player, trick_card)
-                    for card in player.hand:
-                        if card.value == value:
-                            play_card(settings, screen, player, pile, card)
-                            break
+                    determine_lowest_value(player, trick_card)
 
             else:
-                #needs a trick but doesn't have one so play highest possible card
-                value = determine_highest_nontrickvalue(player, trick_card)
-                for card in player.hand:
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
+                determine_highest_nontrickvalue(player, trick_card)
 
         else:
             #first play and doesn't need trick so play lowest card
             value = determine_lowest_value(player, trick_card)
-            for card in player.hand:
-                if card.value == value:
-                    play_card(settings, screen, player, pile, card)
-                    break
 
     else:
         #covers all the scenarios where it isn't the first play
@@ -299,49 +278,30 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
                     winning_card = pile.current_winning_card(trick_card)
                     if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
                         #if the trick will beat current winning card, then play it
-                        value = determine_highest_trickvalue(player, trick_card)
-                        for card in reversed(player.hand.sprites()): #reversed order to make sure it's a trick
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_trickvalue(player, trick_card)
                     else:
                         #can't beat current leader, so play lowest nontrick (if they have others) to save trick card
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
 
                 else:
                     #needs a trick and has one, but not valid, so play lowest
-                    value = determine_lowest_value(player, trick_card)
-                    for card in player.hand:
-                        if card.value == value:
-                            play_card(settings, screen, player, pile, card)
-                            break
+                    determine_lowest_value(player, trick_card)
 
             else:
                 #needs a trick but doesn't have one, play highest hoping to take
                 winning_card = pile.current_winning_card(trick_card)
                 if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
-                    value = determine_highest_nontrickvalue(player, trick_card)
+                    determine_highest_nontrickvalue(player, trick_card)
                 else:
-                    value = determine_lowest_value(player, trick_card)
-                for card in player.hand:
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
+                    determine_lowest_value(player, trick_card)
 
         else:
             #doesn't have a trick and doesn't need one, play lowest card
-            value = determine_lowest_value(player, trick_card)
-            for card in player.hand:
-                if card.value == value:
-                    play_card(settings, screen, player, pile, card)
-                    break
+            determine_lowest_value(player, trick_card)
 
 ####################PLAY DETERMINATION TREE#####################################
 
+    play_card(settings, screen, player, pile) #plays the card that was determined
     set_card_validity(player)
 
 def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players):
@@ -409,68 +369,34 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
 
                     if only_tricks_valid(player, trick_card) and (trick_balance <= 0) and (needs_all_tricks):
                         #need a trick and in overbid situation, only play high card to begin if you need all remaining tricks
-                        value = determine_highest_trickvalue(player, trick_card)
-                        for card in reversed(player.hand.sprites()): #reverse sort to find the highest value (making sure a trick)
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_trickvalue(player, trick_card)
                     elif only_tricks_valid(player, trick_card):
                         #play the lowest value trick, draw out larger ones if possible
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
                     elif needs_all_tricks:
                         #need all remaining tricks, play the highest trick to draw out everything
-                        value = determine_highest_trickvalue(player, trick_card)
-                        for card in reversed(player.hand.sprites()): #reverse sort to find the highest value (making sure a trick)
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_trickvalue(player, trick_card)
                     else:
-                        #play low card to get action away from player
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
 
                 else:
                     if needs_all_tricks:
                         #needs all the remaining cards, play highest non trick to try and take
-                        value = determine_highest_nontrickvalue(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_nontrickvalue(player, trick_card)
                     else:
                         #doesn't need all remaining cards, play lowest to get action away from player
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
 
             else:
                 #needs a trick but doesn't have one so play highest possible card
-                value = determine_highest_nontrickvalue(player, trick_card)
-                for card in player.hand:
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
+                determine_highest_nontrickvalue(player, trick_card)
 
         else:
             #first play and doesn't need trick so play lowest card
-            value = determine_lowest_value(player, trick_card)
-            for card in player.hand:
-                if card.value == value:
-                    play_card(settings, screen, player, pile, card)
-                    break
+            determine_lowest_value(player, trick_card)
 
     else:
         #covers all the scenarios where it isn't the first play
-
         winning_card = pile.current_winning_card(trick_card)
 
         if needs_trick:
@@ -484,64 +410,44 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
 
                     if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
                         #if the trick will beat current winning card, then play it
-                        value = determine_highest_trickvalue(player, trick_card)
-                        for card in reversed(player.hand.sprites()): #reversed order to make sure it's a trick
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_highest_trickvalue(player, trick_card)
                     else:
                         #can't beat current leader, so play lowest nontrick (if they have others) to save trick card
-                        value = determine_lowest_value(player, trick_card)
-                        for card in player.hand:
-                            if card.value == value:
-                                play_card(settings, screen, player, pile, card)
-                                break
+                        determine_lowest_value(player, trick_card)
 
                 else:
                     #needs a trick and has one, but not valid, so play lowest
-                    value = determine_lowest_value(player, trick_card)
-                    for card in player.hand:
-                        if card.value == value:
-                            play_card(settings, screen, player, pile, card)
-                            break
+                    determine_lowest_value(player, trick_card)
 
             else:
                 #needs a trick but doesn't have one, play highest hoping to take
                 if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
-                    value = determine_highest_nontrickvalue(player, trick_card)
+                    determine_highest_nontrickvalue(player, trick_card)
                 else:
-                    value = determine_lowest_value(player, trick_card)
-                for card in player.hand:
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
+                    determine_lowest_value(player, trick_card)
 
         else:
             #doesn't need trick, play highest card that won't win
-            value, can_slough_trick = determine_slough_value(player, trick_card, winning_card)
-            if can_slough_trick:
-                for card in reversed(player.hand.sprites()): #reversed order to make sure it's a trick
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
-            else:
-                for card in player.hand:
-                    if card.value == value:
-                        play_card(settings, screen, player, pile, card)
-                        break
+            determine_slough_value(player, trick_card, winning_card)
 
 ####################PLAY DETERMINATION TREE#####################################
 
+    play_card(settings, screen, player, pile)
     set_card_validity(player)
 
-def play_card(settings, screen, player, pile, card):
+def play_card(settings, screen, player, pile):
     """Play the card selected and add to discard pile"""
 
-    card.played_id = player.id
-    sf.add_to_discard_pile(settings, screen, pile, card)
-    card.valid = False #reset validity for future play
-    player.hand.remove(card)
-    player.turn_active = False
+    for card in player.hand:
+        if card.play:
+            #card was deemed valid, so play it
+            card.played_id = player.id
+            sf.add_to_discard_pile(settings, screen, pile, card)
+            card.valid = False #reset validity for future play
+            card.play = False #reset play trigger to false
+            player.hand.remove(card)
+            player.turn_active = False
+            break
 
 def set_card_validity(player):
     """Sets all remaining cards in a hand to be not valid"""
@@ -573,7 +479,7 @@ def can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_ca
             return False #can't beat nontrick current leader
 
 def determine_lowest_value(player, trick_card):
-    """Determines lowest value in the player's valid hand"""
+    """Determines lowest card in the player's valid hand"""
 
     has_only_tricks = True
     low_value = 15 #highest possible value
@@ -588,13 +494,22 @@ def determine_lowest_value(player, trick_card):
         for card in player.hand:
             if (card.value < low_value) and (card.valid):
                 low_value = card.value
+                card.play = True
+                for other in player.hand:
+                    #after setting play bool to true, cycle through rest to set to False
+                    if other != card:
+                        other.play = False
     else:
         #player may have a trick, but we want the lowest non-trick value
         for card in player.hand:
             if (card.value < low_value) and (card.valid) and (card.suit != trick_card.suit):
                 low_value = card.value
+                card.play = True
+                for other in player.hand:
+                    #after setting play bool to true, cycle through rest to set to False
+                    if other != card:
+                        other.play = False
 
-    return low_value
 
 def determine_slough_value(player, trick_card, winning_card):
     """Determines highest card in your hand that won't win"""
@@ -607,6 +522,11 @@ def determine_slough_value(player, trick_card, winning_card):
     for crd in player.hand:
         if (crd.value < value) and (crd.valid):
             value = crd.value
+            crd.play = True
+            for other in player.hand:
+                #after setting play bool to true, cycle through rest to set to False
+                if other != crd:
+                    other.play = False
 
     #determines if player has a trick
     for crd in player.hand:
@@ -627,13 +547,21 @@ def determine_slough_value(player, trick_card, winning_card):
         for crd in player.hand:
             if (crd.value > value) and (crd.valid) and (crd.suit == trick_card.suit) and not can_beat_card(crd, winning_card, trick_card):
                 value = crd.value
+                crd.play = True
+                for other in player.hand:
+                    #after setting play bool to true, cycle through rest to set to False
+                    if other != crd:
+                        other.play = False
     else:
         #if can't slough trick, find the highest card that won't beat winner
         for crd in player.hand:
             if (crd.value > value) and (crd.valid) and not can_beat_card(crd, winning_card, trick_card):
                 value = crd.value
-
-    return value, can_slough_trick
+                crd.play = True
+                for other in player.hand:
+                    #after setting play bool to true, cycle through rest to set to False
+                    if other != crd:
+                        other.play = False
 
 def can_beat_card(crd, winning_card, trick_card):
     """Determines if a single card can beat the winning card"""
@@ -653,8 +581,11 @@ def determine_highest_nontrickvalue(player, trick_card):
     for card in player.hand:
         if (card.value > high_value) and (card.valid) and (card.suit != trick_card.suit):
             high_value = card.value
-
-    return high_value
+            card.play = True
+            for other in player.hand:
+                #Reset bools for other cards
+                if other != card:
+                    other.play = False
 
 def determine_highest_trickvalue(player, trick_card):
     """Determines highest trick value in the player's valid hand"""
@@ -664,8 +595,11 @@ def determine_highest_trickvalue(player, trick_card):
     for card in player.hand:
         if (card.value > high_value) and (card.valid) and (card.suit == trick_card.suit):
             high_value = card.value
-
-    return high_value
+            card.play = True
+            for other in player.hand:
+                #Reset bools for other cards
+                if other != card:
+                    other.play = False
 
 def only_tricks_valid(player, trick_card):
     """Determines if a player only has trick cards that are valid"""
