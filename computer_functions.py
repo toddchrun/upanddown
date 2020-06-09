@@ -307,13 +307,14 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
 def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players):
     """Determines what card to play based on intermediate mode"""
 
-    #determining boolean values
+    #determining initial values
     needs_trick = False
     trick_valid = False
     first_play = False
     has_trick = False
     needs_all_tricks = False
     number_of_tricks = 0
+    tricks_in_hand = 0
 
     #determines if first play
     if len(pile.discards) == 0:
@@ -323,11 +324,12 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
     if player.curr_round_tricks < player.bid:
         needs_trick = True
 
-    #determines if player has a trick
+    #determines if player has a trick, increment number
     for crd in player.hand:
         if crd.suit == trick_card.suit:
             has_trick = True
-            break
+            tricks_in_hand += 1
+
 
     #determines if player has a trick card that is valid
     for crd in player.hand:
@@ -351,6 +353,9 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
 
     #trick balance is number needed based on cards left
     trick_balance = curr_round - tricks_taken - tricks_needed
+    #0 and tricks needed is same as remaining hands left
+    #if negative, more tricks are needed to make bids than hands left
+    #if positive, there are more hands left than tricks needed
 
 
 ####################PLAY DETERMINATION TREE#####################################
@@ -408,16 +413,46 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
                 if trick_valid:
                     #needs trick and has one in valid hand, play highest if it beats current winner
 
-                    if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
-                        #if the trick will beat current winning card, then play it
+                    if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance < 0:
+                        #over bid situation, play the highest
                         determine_highest_trickvalue(player, trick_card)
+                    elif can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance == 0:
+                        #even bid situation, determine next play
+                        if (tricks_in_hand > player.bid) or (tricks_needed_after > 0):
+                            #player has more tricks than bid, try and win this hand by getting rid of highest
+                            #or someone else behind may need one as well, use highest
+                            determine_highest_trickvalue(player, trick_card)
+                        else:
+                            #do not have more tricks than bid, and no one behind you needs a trick, play the lowest that will win
+                            determine_lowest_trickvalue(player, trick_card, winning_card)
+                    elif can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance > 0:
+                        #under bid situation, determine slough value if appropriate
+                        if only_tricks_valid(player, trick_card):
+                            #only have tricks, so play the highest
+                            determine_highest_trickvalue(player, trick_card)
+                        else:
+                            #slough highest card since under bid
+                            determine_slough_value(player, trick_card, winning_card)
                     else:
-                        #can't beat current leader, so play lowest nontrick (if they have others) to save trick card
-                        determine_lowest_value(player, trick_card)
+                        #can't beat current leader, determine appropriate step
+                        if tricks_in_hand > player.bid:
+                            #can't beat, but already have more tricks than needed, slough highest one possible
+                            determine_slough_value(player, trick_card, winning_card)
+                        else:
+                            #need your current trick even though you can't play it, play lowest to hang on to it
+                            determine_lowest_value(player, trick_card)
 
                 else:
-                    #needs a trick and has one, but not valid, so play lowest
-                    determine_lowest_value(player, trick_card)
+                    #needs a trick and has one, but not valid
+                    if tricks_in_hand >= player.bid:
+                        #has tricks to cover bids, slough highest other
+                        determine_slough_value(player, trick_card, winning_card)
+                    elif tricks_in_hand < player.bid and can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card):
+                        #need to take more bids than you have tricks, if you can beat current winner, do so
+                        determine_highest_nontrickvalue(player, trick_card)
+                    else:
+                        #need to take more bids than you have tricks, but can't beat current winner.  Play lowest to conserve other high cards
+                        determine_lowest_value(player, trick_card)
 
             else:
                 #needs a trick but doesn't have one, play highest hoping to take
@@ -595,6 +630,20 @@ def determine_highest_trickvalue(player, trick_card):
     for card in player.hand:
         if (card.value > high_value) and (card.valid) and (card.suit == trick_card.suit):
             high_value = card.value
+            card.play = True
+            for other in player.hand:
+                #Reset bools for other cards
+                if other != card:
+                    other.play = False
+
+def determine_lowest_trickvalue(player, trick_card, winning_card):
+    """Determines lowest trick value in the player's valid hand that will still win"""
+
+    low_value = 15 #lowest possible value
+
+    for card in player.hand:
+        if (card.value < low_value) and (card.valid) and (card.suit == trick_card.suit) and can_beat_card(card, winning_card, trick_card):
+            low_value = card.value
             card.play = True
             for other in player.hand:
                 #Reset bools for other cards
