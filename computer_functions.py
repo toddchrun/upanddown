@@ -414,7 +414,7 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
                     #needs trick and has one in valid hand, play highest if it beats current winner
 
                     if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance <= 0:
-                        #over or even bid situation, determine next play based tricks in hand and expected after 
+                        #over or even bid situation, determine next play based tricks in hand and expected after
                         if (tricks_in_hand > player.bid) or (tricks_needed_after > 0):
                             #player has more tricks than bid, try and win this hand by getting rid of highest
                             #or someone else behind may need one as well, use highest
