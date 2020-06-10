@@ -413,11 +413,8 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
                 if trick_valid:
                     #needs trick and has one in valid hand, play highest if it beats current winner
 
-                    if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance < 0:
-                        #over bid situation, play the highest
-                        determine_highest_trickvalue(player, trick_card)
-                    elif can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance == 0:
-                        #even bid situation, determine next play
+                    if can_beat(player, needs_trick, has_trick, trick_valid, winning_card, trick_card) and trick_balance <= 0:
+                        #over or even bid situation, determine next play based tricks in hand and expected after 
                         if (tricks_in_hand > player.bid) or (tricks_needed_after > 0):
                             #player has more tricks than bid, try and win this hand by getting rid of highest
                             #or someone else behind may need one as well, use highest
@@ -517,7 +514,7 @@ def determine_lowest_value(player, trick_card):
     """Determines lowest card in the player's valid hand"""
 
     has_only_tricks = True
-    low_value = 15 #highest possible value
+    low_value = 16 #highest possible value
 
     for card in player.hand:
         if card.valid and card.suit != trick_card.suit:
@@ -551,7 +548,7 @@ def determine_slough_value(player, trick_card, winning_card):
 
     has_trick = False
     can_slough_trick = False
-    value = 15 #highest possible value
+    value = 16 #highest possible value
 
     #initially set card to play as lowest value possible in case they have no choice but to win hand
     for crd in player.hand:
@@ -639,7 +636,7 @@ def determine_highest_trickvalue(player, trick_card):
 def determine_lowest_trickvalue(player, trick_card, winning_card):
     """Determines lowest trick value in the player's valid hand that will still win"""
 
-    low_value = 15 #lowest possible value
+    low_value = 16 #lowest possible value
 
     for card in player.hand:
         if (card.value < low_value) and (card.valid) and (card.suit == trick_card.suit) and can_beat_card(card, winning_card, trick_card):
