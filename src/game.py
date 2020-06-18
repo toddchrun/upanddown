@@ -1,20 +1,23 @@
 ################################################
-# Up and Down the River (A card game)          #
+# Up and Down the River (A card game)
+# Copyright Todd Chrun 2020
+# Version 1.0.0
 ################################################
 
 import pygame
 import time
 from random import randint
-from settings import Settings
 from pygame.sprite import Group
+
+from settings import Settings
 from player import Player
 from deck import Deck
 from table import Table
 from discard_pile import Pile
 from scoreboard import Scoreboard
-from settings import Settings
 from action_message import Message
 from prompt_screen import PromptScreen
+
 import game_functions as gf
 import screen_functions as sf
 

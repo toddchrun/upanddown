@@ -1,7 +1,6 @@
 """
-Game functions for Up and Down the River
+Game functions for Up and Down the River - coordinates gameplay events
 """
-
 import sys
 import pygame
 import time
@@ -15,21 +14,20 @@ import computer_functions as cf
 
 def deal_round(settings, screen, table, active_players, pile, message, deck, curr_deck, curr_round):
     """
-    Deals cards to every player, total cards equals the current round.  Cards
-    are dealt to the left of the dealer and continually removed from the Deck
+    Deals cards to every player, total cards equals the current round.
+    Cards are dealt to the left of the dealer and continually removed from the Deck
     object
     """
 
-    deck.dealt = False #Bool to activate deal function
+    deck.dealt = False #Boolean to activate deal function
 
     while not deck.dealt:
         message.update_message("Click the deck to deal!", 0)
         sf.update_screen(settings, screen, table, active_players, pile, None, message, deck)
         sf.check_for_deal(settings, screen, deck)
 
-    counter = curr_round
-
     #Deal out cards (number based on current round) to each player
+    counter = curr_round
     while counter > 0:
         for i in range(0, len(active_players)):
             idx = randint(0, len(curr_deck)-1)
@@ -44,8 +42,7 @@ def get_trick(curr_deck):
 
 def bid_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck):
     """
-    Cycles through each player to determine number of cards they wish to bid for
-    the current round.
+    Cycles through each player to determine number of cards they wish to bid for the current round.
     """
 
     #check to see if any player has the joker, if so, set suit to be trick_suit
@@ -63,13 +60,13 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
     #main loop to continue through until all bids have been validated
     for player in active_players:
 
-        #sets each player's turn status to active
+        #sets player's turn status to active
         player.turn_active = True
         message.update_message(player.name + ", it's your bid!", 0)
 
         if not player.user_control:
             while player.turn_active:
-                #for any computer controlled player, gets their bid, pauses 1.5 seconds for turn
+                #for any computer controlled player, gets their bid, pauses for turn
                 sf.update_screen(settings, screen, table, active_players, pile, trick_card, message, deck)
                 cf.bid(settings, player, trick_card, active_players, curr_round)
                 sf.player_pause(settings, screen, player)
@@ -82,6 +79,7 @@ def bid_round(settings, screen, table, curr_round, active_players, pile, trick_c
 def play_round(settings, screen, table, curr_round, active_players, pile, trick_card, message, deck):
     """Plays the round based on current number of cards and trick."""
 
+    #will loop until each player has played all cards
     count = 0
     while count < curr_round:
 
@@ -121,6 +119,7 @@ def play_round(settings, screen, table, curr_round, active_players, pile, trick_
         #Clears out the discard pile
         clear_discards(pile)
 
+    #tally up points, reset bids/tricks/order
     score_round(active_players)
     clear_bids_tricks(active_players)
     trick_card.trick_broken = False
@@ -131,9 +130,9 @@ def trick_winner(settings, screen, table, active_players, pile, trick_card, mess
 
     #Need a false bool for each hand, even if trick broken, one may have not been played
     trick_played = False
+
     max_value = 0
 
-    #Establishes sprite list
     round_hand = pile.discards.sprites()
 
     #Goes through all cards to determine if a trick was played
@@ -166,12 +165,12 @@ def trick_winner(settings, screen, table, active_players, pile, trick_card, mess
                 sf.player_pause(settings, screen, player)
 
 
-    #Need to re-sort list based on winner
+    #Need to re-sort list based on winner, winner starts the next hand
     while active_players[0].id != winning_card.played_id:
         active_players.append(active_players.pop(0))
 
 def clear_discards(pile):
-    """Clears out the discard pile, resets each cards played id as well"""
+    """Clears out the discard pile, resets each cards played_id as well"""
 
     for card in pile.discards:
         card.played_id = int()
@@ -182,6 +181,7 @@ def score_round(active_players):
     Simple determination of scores based on tricks taken and bid
     """
 
+    #10 points for making total bid, plus bonus point for each bid
     for player in active_players:
         if player.bid == player.curr_round_tricks:
             player.score += (10 + player.bid)

@@ -1,7 +1,6 @@
 """
 Screen functions for Up and Down the River
 """
-
 import sys
 import pygame
 import time

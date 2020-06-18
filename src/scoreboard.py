@@ -1,14 +1,9 @@
 """
 Scoreboard Class
 """
-
 class Scoreboard():
 
     def __init__(self):
-        """
-        Initialize an empty string for now, will take active player array
-        and sort accordingly
-        """
 
         self.sorted_scores = []
 

@@ -1,10 +1,7 @@
-###############################################################################
-# Settings for Up and Down the River (a card game)
-#
-###############################################################################
-
+"""
+Initial settings for Up and Down the River
+"""
 class Settings() :
-    """Class to store all the settings for Up and Down the River Game"""
 
     def __init__(self) :
         """Initializes static settings"""

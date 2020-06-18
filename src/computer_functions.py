@@ -1,8 +1,6 @@
 """
 Computer AI functions for Up and Down the River
-For now, this will be an 'easy' or 'intermediate' setting
 """
-
 import sys
 import pygame
 import math
@@ -11,6 +9,10 @@ from random import randint
 from discard_pile import Pile
 from pygame.sprite import Group
 import screen_functions as sf
+
+
+#########################BIDDING############################################
+
 
 def bid(settings, player, trick_card, active_players, curr_round):
     """Sets computer controlled bid based on current hand"""
@@ -23,7 +25,7 @@ def bid(settings, player, trick_card, active_players, curr_round):
         determine_bid_hard(player, trick_card, active_players, curr_round)
 
 def determine_bid_easy(player, trick_card):
-    """For easy mode, increments bid if player has an ace or trick"""
+    """For easy mode"""
 
     bid = 0
 
@@ -140,8 +142,15 @@ def get_open_bid(curr_bids, curr_round):
     else:
         return True
 
+
+#########################END BIDDING############################################
+
+
+#########################PLAYING############################################
+
+
 def play(settings, screen, player, trick_card, pile, curr_round, active_players):
-    """Sets computer play based on what has been played, etc."""
+    """Sets computer play based on what has been played, calls upon different game mode function at the end"""
 
     if len(pile.discards) == 0:
         if player.has_only_tricks or trick_card.trick_broken:
@@ -179,7 +188,6 @@ def play(settings, screen, player, trick_card, pile, curr_round, active_players)
         determine_play_intermediate(settings, screen, pile, player, trick_card)
     elif player.difficulty == settings.game_difficulty_option[2]:
         determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players)
-
 
 def determine_play_easy(settings, screen, pile, player, trick_card):
     """Determines what card to play based on easy mode"""
@@ -231,7 +239,6 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
         if (crd.suit == trick_card.suit) and (crd.valid):
             trick_valid = True
             break
-
 
 ####################PLAY DETERMINATION TREE#####################################
 
@@ -299,13 +306,14 @@ def determine_play_intermediate(settings, screen, pile, player, trick_card):
             #doesn't have a trick and doesn't need one, play lowest card
             determine_lowest_value(player, trick_card)
 
-####################PLAY DETERMINATION TREE#####################################
+####################END PLAY DETERMINATION TREE#####################################
 
-    play_card(settings, screen, player, pile) #plays the card that was determined
+    #plays card selected and resets card validity
+    play_card(settings, screen, player, pile)
     set_card_validity(player)
 
 def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, active_players):
-    """Determines what card to play based on intermediate mode"""
+    """Determines what card to play based on hard mode"""
 
     #determining initial values
     needs_trick = False
@@ -462,8 +470,9 @@ def determine_play_hard(settings, screen, pile, player, trick_card, curr_round, 
             #doesn't need trick, play highest card that won't win
             determine_slough_value(player, trick_card, winning_card)
 
-####################PLAY DETERMINATION TREE#####################################
+####################END PLAY DETERMINATION TREE#####################################
 
+    #plays card selected and resets card validity
     play_card(settings, screen, player, pile)
     set_card_validity(player)
 
@@ -695,3 +704,6 @@ def get_tricks_needed_after(player, active_players):
         tricks_needed_after += max(plyr.bid - plyr.curr_round_tricks, 0)
 
     return tricks_needed_after
+
+
+#########################END PLAYING############################################

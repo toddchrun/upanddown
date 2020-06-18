@@ -1,28 +1,26 @@
-###############################################################################
-# Class for each player
-#
-###############################################################################
+"""
+Class for every player in Up and Down the River
+"""
 import pygame
 from pygame.sprite import Group
 
 class Player():
-    """
-    Class for every player
-    """
 
     def __init__(self, settings, screen, player_id, player_name, difficulty):
         super(Player, self).__init__()
 
-        #Visual settings
-        self.x_start = 0.0
-        self.y_start = 0.0
-        self.x_center = 0.0
+        #Passing screen and settings
         self.settings = settings
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.bg_color = settings.bg_color
 
-        # Font settings - white for now and just default
+        #Visual settings initiliaze
+        self.x_start = 0.0
+        self.y_start = 0.0
+        self.x_center = 0.0
+
+        # Font settings
         self.text_color = (255, 255, 255)
         self.font = pygame.font.SysFont(None, 16)
 

@@ -1,7 +1,6 @@
 """
 Play Button class
 """
-
 import pygame.font
 
 class Button() :

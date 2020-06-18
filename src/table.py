@@ -1,6 +1,6 @@
-###############################################################################
-#   Table Class
-###############################################################################
+"""
+Table Class - Base image for the game
+"""
 import pygame
 from pygame import gfxdraw
 
@@ -17,7 +17,7 @@ class Table():
         self.settings = settings
 
         #load table image
-        self.image = pygame.image.load('images/table.png')
+        self.image = pygame.image.load('resources/images/table.png')
         self.rect = self.image.get_rect()
         self.rect.center = self.screen_rect.center
 

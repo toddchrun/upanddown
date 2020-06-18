@@ -1,7 +1,6 @@
-###############################################################################
-#   Card Class
-#   Inherits Pygame Sprites, used to display for each player and given hand!
-###############################################################################
+"""
+Card Class - Card object for each card in a standard deck
+"""
 import pygame
 from pygame.sprite import Sprite
 
@@ -9,12 +8,11 @@ class Card(Sprite):
 
     def __init__(self, settings, screen, suit, value, display, sort_index):
         """
-        Initalizes each card to be displayed
+        Initialize values for each card object, child of Pygame Sprites
         """
-
         super().__init__()
 
-        #Visual Settings
+        #Passes screen and settings
         self.settings = settings
         self.screen = screen
         self.screen_rect = screen.get_rect()
@@ -31,8 +29,8 @@ class Card(Sprite):
         self.valid = False #processed each turn, needs to be True to be able to play
         self.played_id = int()  #tracks the person that played the card
 
-        #Set card face down image
-        self.image = pygame.image.load('images/card.png')
+        #Initial set of card image, face down
+        self.image = pygame.image.load('resources/images/card.png')
         self.rect = self.image.get_rect()
         self.image = pygame.transform.scale(self.image, (int(self.rect.width / 2), int(self.rect.height / 2)))
         self.rect = self.image.get_rect()
@@ -55,10 +53,10 @@ class Card(Sprite):
         self.face_up = not self.face_up
 
         if self.face_up:
-            self.image = pygame.image.load('images/' + self.display + '.png')
+            self.image = pygame.image.load('resources/images/' + self.display + '.png')
             self.image = pygame.transform.scale(self.image, (int(self.rect.width), int(self.rect.height)))
         else:
-            self.image = pygame.image.load('images/card.png')
+            self.image = pygame.image.load('resources/images/card.png')
             self.image = pygame.transform.scale(self.image, (int(self.rect.width), int(self.rect.height)))
 
     def select_card(self):
